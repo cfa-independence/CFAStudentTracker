@@ -1,0 +1,58 @@
+﻿@model CFAStudentTracker.Models.Queue
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Queue</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.QueueDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.QueueDescription)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Group.GroupName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Group.GroupName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Queue2.QueueDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Queue2.QueueDescription)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.QueueOrder.QueueOrderDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.QueueOrder.QueueOrderDescription)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            <button type="button" class="btn btn-link" onclick="history.go(-1)">
+                Back
+            </button>
+        </div>
+    }
+</div>

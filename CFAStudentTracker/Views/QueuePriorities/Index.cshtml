@@ -1,0 +1,40 @@
+﻿@model CFAStudentTracker.Models.QOVM
+
+@{
+    ViewBag.Title = "Index";
+}
+<p>
+    @Html.ActionLink("Change Queue Order", "QueueOrderChange", new { id = Model.QueueID})
+</p>
+
+<p>
+    @Html.ActionLink("Add", "Create", new { QueueID = Model.QueueID })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Order")
+        </th>
+        <th>
+            @Html.DisplayName("Type")
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.QOList) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.QPOrder)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FileType.TypeDescription)
+        </td>
+        <td>
+            @Html.ActionLink("Move Up", "Index", new { QueueID = Model.QueueID, index = item.QPOrder, up = true }) |
+            @Html.ActionLink("Move Down", "Index", new { QueueID = Model.QueueID, index = item.QPOrder, up = false }) |
+            @Html.ActionLink("Delete", "Delete", new { QPOrder = item.QPOrder, QueueID = item.QueueID })
+        </td>
+    </tr>
+}
+
+</table>

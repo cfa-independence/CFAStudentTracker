@@ -1,0 +1,150 @@
+﻿@model CFAStudentTracker.Models.ViewModels.SystemManagementVM
+@{
+    ViewBag.Title = "System Management";
+}
+
+<h2>System Management</h2>
+<div class="row">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Errors With SSN not found
+        </div>
+        <div class="panel-body">
+            <h6>Must find student and create new errors manually. Click resolve once new error is created.</h6>
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayName("Error Type")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Note")
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ErrorsWithNull)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ErrorType.Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Note)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Resolve", "NoSSNErrorResolve", new { id = item.ErrorID })
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+            <!-- /.col-lg-12 -->
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Errors Not Assigned to Officer In a Queue
+        </div>
+        <div class="panel-body">
+            <h6>Ensure Officer Assigned Still Works for Company</h6>
+            <h6>If not, open file and reassign file to assistant director</h6>
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayName("Student Name")
+                        </th>
+                        <th>
+                            @Html.DisplayName("SSN")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Error Type")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Date Found")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Officer Assigned")
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ErrorsNotAssigned)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Processing.Record.StudentFile.FileName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Processing.Record.StudentFile.FileSSN)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ErrorType.Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DateFound)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Processing.Username)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Open", "../FileOpen/OpenFile", new { id = item.ProcID })
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+            <!-- /.col-lg-12 -->
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Duplicate SSNs
+        </div>
+        <div class="panel-body">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayName("SSN")
+                        </th>
+                        <th>
+                            @Html.DisplayName("SSNs Found")
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DuplicateSSN)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.MyString)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.MyInt)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Resolve", "DupSSNResolve", new { ssn = item.MyString })
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+            <!-- /.col-lg-12 -->
+        </div>
+    </div>
+
+</div>

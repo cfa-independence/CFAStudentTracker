@@ -1,0 +1,63 @@
+﻿@model CFAStudentTracker.Models.Queue
+
+@{
+    ViewBag.Title = "Audit";
+}
+
+<h2>Audit</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Queue</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.QueueID)
+        @Html.HiddenFor(model => model.QueueDescription)
+        @Html.HiddenFor(model => model.QueueNextQueue)
+        @Html.HiddenFor(model => model.GroupID)
+        @Html.HiddenFor(model => model.QueueOrderID)
+        @Html.HiddenFor(model => model.FilesInQueue)
+       
+
+        <div class="form-group">
+            @Html.Label("Set for Audit?", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(model => model.AuditQueue)
+                    @Html.ValidationMessageFor(model => model.AuditQueue, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Load Audit Files Into", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("AuditQueueAssigned", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.AuditQueueAssigned, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Maximum Files In Audit Queue", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.AuditPercent, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.AuditPercent, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    <button type="button" class="btn btn-link" onclick="history.go(-1)">
+        Back
+    </button>
+</div>

@@ -1,0 +1,26 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.User>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>User Schedule</h2>
+
+<table class="table">
+    <tr>
+        <th>Username</th>
+
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+
+        <td>
+            @item.Username
+        </td>
+        <td>@Html.ActionLink("Schedule", "../Hours/AdminIndex", new { user = @item.Username }, htmlAttributes: new { @class = "btn btn-primary" })</td>
+        <td>@Html.ActionLink("Files Completed", "../CompletedFiles/Index", new { username = @item.Username } , htmlAttributes: new { @class = "btn btn-primary" })</td>
+    </tr>
+}
+
+</table>

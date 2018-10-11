@@ -1,0 +1,63 @@
+﻿@model CFAStudentTracker.Models.MasterMPRVM
+
+@{
+    ViewBag.Title = "Master Metric Progress Report";
+}
+
+<div class="row">
+    <h1>
+        @Model.QueueName
+    </h1>
+    <h2>Metric Progress Report</h2>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Overview
+            </div>
+            <div class="panel-body">
+                <h3>Metric Percentage</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Last Updated</th>
+                                <th>Type</th>
+                                <th>14 Days</th>
+                                <th>28 Days</th>
+                                <th>56 Days</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.UserViewModels)
+                            {
+                                <tr>
+                                    <td>@Html.ActionLink(item.username,"../MetricProgressReport/Index", new { username = item.username })</td>
+                                    <td>@item.LastUpdated.ToString("MM/dd/yyyy")</td>
+                                    <td>Production Percentage</td>
+                                    <td>@String.Format("{0:#,0.0}", item.PerHour14 * 100)%</td>
+                                    <td>@String.Format("{0:#,0.0}", item.PerHour28 * 100)%</td>
+                                    <td>@String.Format("{0:#,0.0}", item.PerHour56 * 100)%</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Error Percentage</td>
+                                    <td>@String.Format("{0:#,0.0}", item.ErrPercent14)%</td>
+                                    <td>@String.Format("{0:#,0.0}", item.ErrPercent28)%</td>
+                                    <td>@String.Format("{0:#,0.0}", item.ErrPercent56)%</td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+﻿@model CFAStudentTracker.Models.IndexViewModel
+@{
+    ViewBag.Title = "Manage";
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">@ViewBag.Title.</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <h4>Change your account settings</h4>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<!-- /.row -->
+<div class="row">
+    <p class="text-success">@ViewBag.StatusMessage</p>
+    <div>
+        <dl class="dl-horizontal">
+            <dt>Password:</dt>
+            <dd>
+                [
+                @if (Model.HasPassword)
+            {
+                    @Html.ActionLink("Change your password", "ChangePassword")
+                }
+                else
+                {
+                    @Html.ActionLink("Create", "SetPassword")
+                }
+                ]
+            </dd>
+
+            <dt>Manage Users:</dt>
+            <dd>
+
+                @Html.ActionLink("Manage", "ManageUsers")
+
+            </dd>
+            <dt>Manage Roles:</dt>
+            <dd>
+
+                @Html.ActionLink("Manage", "Index", "Roles")
+
+            </dd>
+
+        </dl>
+    </div>
+
+</div>
+

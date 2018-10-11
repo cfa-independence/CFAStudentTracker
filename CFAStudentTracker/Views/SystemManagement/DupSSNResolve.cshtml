@@ -1,0 +1,74 @@
+﻿@model List<List<CFAStudentTracker.Models.ViewModels.ProcessingVM>>
+@{
+    ViewBag.Title = "Resolve";
+}
+
+<h2>Resolve Duplicate SSN</h2>
+@foreach (var item in Model)
+{
+    if (item.Count == 0)
+    {
+
+    }
+    else
+    {
+        <div class="row">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    @Html.ActionLink("Resolve With SSN", "ResolveSSN", new { id = item.First().p.Record.FileID }, htmlAttributes: new { @class = "btn btn-success btn-lg" })
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped table-bordered table-hover">
+                        <tr>
+                            <th>
+                                @Html.DisplayName("Status")
+                            </th>
+
+                            <th>
+                                @Html.DisplayName("Type")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Name")
+                            </th>
+                            <th>
+                                @Html.DisplayName("SSN")
+                            </th>
+                            <th>@Html.DisplayName("Date Completed")</th>
+                            <th>@Html.DisplayName("Date In Queue")</th>
+                        </tr>
+
+                        @foreach (var x in item)
+                    {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => x.status)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => x.p.Record.FileType.TypeDescription)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => x.p.Record.StudentFile.FileName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => x.p.Record.StudentFile.FileSSN)
+                                </td>
+                                <td>
+                                    @Html.Display(x.p.ProcUserComplete.ToString())
+                                </td>
+                                <td>
+                                    @Html.Display(x.p.ProcInQueue.ToString("MM/dd/yyyy"))
+                                </td>
+                            </tr>
+                        }
+
+                    </table>
+
+                    <!-- /.col-lg-12 -->
+                </div>
+            </div>
+
+        </div>
+    }
+
+}

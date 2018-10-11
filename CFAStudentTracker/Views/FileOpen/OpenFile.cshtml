@@ -1,0 +1,289 @@
+﻿@model CFAStudentTracker.Models.ProcessingDetail
+
+@{
+    ViewBag.Title = "Open";
+}
+
+<div class="row" style="padding-top:5px">
+    <button type="button" class="btn btn-primary btn-lg" onclick="history.go(-1)">
+        Back
+    </button>    
+</div>
+<hr />
+<div class="row">
+    <h2>@Model.Rec.StudentFile.FileName </h2>
+    <hr />
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Manage File
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayName("Assigned To")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Proc.Username)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("SSN")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Rec.StudentFile.FileSSN)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Type")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Rec.FileType.TypeDescription)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("High Priority")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Rec.ProcPriority)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Date In Queue")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Proc.ProcInQueue)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Date Given")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Proc.ProcToUser)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Date Complete")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Proc.ProcUserComplete)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayName("Process Date")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Rec.DOD)
+                        </dd>
+
+                        <dt>
+
+                        </dt>
+
+                        <dd>
+                            @Html.ActionLink("Edit Info", "Edit", new { id = Model.Rec.RecordID, mainReturn = ViewBag.OpenReturn })
+                        </dd>
+
+                    </dl>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div style="padding-top:5px">
+                            @if (Model.Proc.ProcUserComplete != null)
+                            {
+
+                                @Html.ActionLink("Uncomplete", "UncompleteFile", new { pID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-danger btn-lg", style = "width:100%" })
+
+                            }
+                            else
+                            {
+
+                                @Html.ActionLink("Complete", "CompleteFile", new { pID = Model.Proc.ProcID, qID = Model.Proc.QueueID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-success btn-lg", style = "width:100%" })
+
+                            }
+
+                        </div>
+                        <div style="padding-top:5px">
+                            @if (Model.Proc.InFilingCabinet)
+                            {
+
+                                @Html.ActionLink("Remove From Cabinet", "FilingCabinet", new { pID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-primary btn-lg", style = "width:100%" })
+
+                            }
+                            else
+                            {
+
+                                @Html.ActionLink("Put In Cabinet", "FilingCabinet", new { pID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-primary btn-lg", style = "width:100%" })
+
+                            }
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-6">
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Reassign", "Reassign", new { ProcessingID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-info btn-lg", style = "width:100%" })
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Record Notes
+            </div>
+            <div class="panel-body">
+                <dl class="media-middle">
+                    <dd>
+                        @Html.ActionLink("Add Note", "AddNote", new { ProcessingID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-primary" })
+                    </dd>
+                    @foreach (var item in Model.Rec.Note)
+                    {
+                        <dt>@item.Username</dt>
+
+                        <dd>    @item.Note1</dd>
+                        <dd> </dd>
+
+                    }
+
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Errors
+        </div>
+        <div class="panel-body">
+            <table class="table">
+                <tr>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        Date Found
+                    </th>
+                    <th>
+                        Complete Type
+                    </th>
+                    <th>
+                        Complete Date
+                    </th>
+                    <th>
+                        Note
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model.ProcErrors)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ErrorType.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateFound)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ErrorComplete.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateComplete)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Note)
+                        </td>
+                        <td>
+                            @if (item.ErrorComplete == null)
+                            {
+                                @Html.ActionLink("Complete", "CompleteError", new { error = item.ErrorID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-success" })
+
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Uncomplete", "UncompleteError", new { error = item.ErrorID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-warning" })
+
+                            }
+                        </td>
+                        <td>
+                            @Html.ActionLink("Reassign", "ReassignError", new { error = item.ErrorID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-warning" })
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Processing Records for Student
+        </div>
+        <div class="panel-body">
+            <table class="table">
+                <tr>
+                    <th>
+                        Queue
+                    </th>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        To User
+                    </th>
+                    <th>
+                        Completed
+                    </th>
+                    <th>
+                        User
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model.PreviousProcessed)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.p.Queue.QueueDescription)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.t.TypeDescription)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.p.ProcToUser)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.p.ProcUserComplete)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.p.Username)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Open", "OpenFile", new { id = item.p.ProcID, mainReturn = ViewBag.mainReturn })
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="padding-top:5px">
+    <button type="button" class="btn btn-link" onclick="history.go(-1)">
+        Back
+    </button>
+</div>

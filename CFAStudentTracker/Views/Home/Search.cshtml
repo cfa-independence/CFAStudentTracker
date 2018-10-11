@@ -1,0 +1,63 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.ViewModels.LookUp>
+
+@{
+    ViewBag.Title = "Search";
+}
+
+<h2>Search</h2>
+<table class="table">
+    <tr>
+        <th>
+            Queue
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            SSN
+        </th>
+        <th>
+            Type
+        </th>
+        <th>
+            To User
+        </th>
+        <th>
+            Completed
+        </th>
+        <th>
+            User
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.p.Queue.QueueDescription)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.f.FileName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.f.FileSSN)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.t.TypeDescription)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.p.ProcToUser)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.p.ProcUserComplete)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.p.Username)
+        </td>
+        <td>
+            @Html.ActionLink("Open", "../FileOpen/OpenFile", new { id=item.p.ProcID, mainReturn = ViewBag.mainReturn })
+        </td>
+    </tr>
+}
+
+</table>

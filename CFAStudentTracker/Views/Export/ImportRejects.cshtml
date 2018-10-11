@@ -1,0 +1,43 @@
+﻿
+
+@{
+    ViewBag.Title = "ImportRejects";
+}
+
+<h2>Import Rejects</h2>
+
+    <h4>Headers Needed: SSN, Note</h4>
+    <hr />
+  
+
+<form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label class="control-label col-md-2" for="file">Filename:</label>
+        <input class="form-control" type="file" name="file" id="file" />
+    </div>
+    <div class="form-group">
+        @Html.Label("Type", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("Type", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.Label("Queue", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("Queue", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.Label("Include Crossover", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.CheckBox("BoolCO", htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+    <input type="submit" />
+</form>
+
+<div>
+    <button type="button" class="btn btn-link" onclick="history.go(-1)">
+        Back
+    </button>
+</div>

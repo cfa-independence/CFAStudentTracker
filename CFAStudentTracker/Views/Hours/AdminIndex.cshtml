@@ -1,0 +1,47 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.Hour>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>@ViewBag.Username</h2>
+<p>
+    @Html.ActionLink("Go Back To Team Management", "../Groups/Index")
+</p>
+<p>
+    @Html.ActionLink("Create New", "Create", new { user= ViewBag.Username }, htmlAttributes: new { @class = "btn btn-primary" }))
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.HourDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HourAmount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HourNotes)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @String.Format("{0:d}", item.HourDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HourAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HourNotes)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.HourID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.HourID })
+            </td>
+        </tr>
+    }
+
+</table>

@@ -1,0 +1,77 @@
+﻿@model CFAStudentTracker.Models.Record
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+@using (Html.BeginForm()) 
+{
+    <div class="form-horizontal">
+        <h3>Student</h3>
+        <div class="form-group">
+            @Html.Label("Name", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.Editor("FileName")
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("SSN", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.Editor("FileSSN")
+                <font color="red">
+                    @Html.ValidationMessage("FileSSN")
+                </font>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("DOD", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DOD, new { @class = "control-label col-md-2", type = "date" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("LDA", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.LDA, new { @class = "control-label col-md-2", type = "date" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("File Type", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("FileTypeID", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Queue", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("QueueID", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Priority?", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.CheckBox("ProcPriority", htmlAttributes: new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Note", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextArea("note")
+            </div>
+        </div>
+    </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+        
+}
+
+<div>
+    <button type="button" class="btn btn-link" onclick="history.go(-1)">
+        Back
+    </button>
+</div>

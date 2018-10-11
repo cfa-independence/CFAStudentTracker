@@ -1,0 +1,91 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.ViewModels.QueueVM>
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>@ViewBag.GroupName</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            @Html.DisplayName("Description")
+        </th>
+        <th>
+            @Html.DisplayName("Next Queue")
+        </th>
+        <th>
+            @Html.DisplayName("Order")
+        </th>
+        <th>
+            @Html.DisplayName("Auditing?")
+        </th>
+        <th>
+            @Html.DisplayName("Files")
+        </th>
+        <th>
+            @Html.DisplayName("Users")
+        </th>
+        <th>
+            @Html.DisplayName("Avg Time")
+        </th>
+        <th>
+            @Html.DisplayName("Oldest File")
+        </th>
+        <th>
+            @Html.DisplayName("Oldest Proc Date")
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink("Manage", "Details", new { id = item.q.QueueID }) 
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.q.QueueDescription)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NextQueue)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.q.QueueOrder.QueueOrderDescription)
+        </td>
+        <td>
+            @if (item.Auditing)
+            {
+                @Html.DisplayName("Yes")
+            }
+            else
+            {
+                @Html.DisplayName("No")
+            }
+        </td>
+        <td>
+            @item.FilesInQueue.ToString()
+        </td>
+        <td>
+            @item.UsersInQueue.ToString()
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AvgQueueTime) Days
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OldestFileInQueue) Days
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OldestProcDate)
+        </td>
+        <td>
+            @Html.ActionLink("Delete", "Delete", new { id = item.q.QueueID })
+        </td>
+    </tr>
+}
+
+</table>

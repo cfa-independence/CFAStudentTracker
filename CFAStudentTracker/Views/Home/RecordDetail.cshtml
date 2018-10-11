@@ -1,0 +1,84 @@
+﻿@model CFAStudentTracker.Models.Record
+
+@{
+    ViewBag.Title = "Record Detail";
+}
+
+<h2>@ViewBag.FileName</h2>
+
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayName("In Filing Cabinet")
+                </th>
+                <th>
+                    @Html.DisplayName("Date In Queue")
+                </th>
+                <th>
+                    @Html.DisplayName("Date To User")
+                </th>
+                <th>
+                    @Html.DisplayName("Date User Complete")
+                </th>
+                <th>
+                    @Html.DisplayName("Queue")
+                </th>
+                <th>
+                    @Html.DisplayName("User")
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.Processing)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InFilingCabinet)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProcInQueue)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProcToUser)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProcUserComplete)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Queue.QueueDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.User.Username)
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Record Notes
+            </div>
+            <div class="panel-body">
+                <dl class="media-middle">
+                    
+                    @foreach (var item in Model.Note)
+                    {
+                        <dt>@item.Username</dt>
+
+                        <dd>    @item.Note1</dd>
+                        <dd> </dd>
+
+                    }
+
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

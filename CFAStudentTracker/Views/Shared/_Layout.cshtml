@@ -1,0 +1,138 @@
+﻿@using Microsoft.AspNet.Identity
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" type="image/ico" href="~/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - CFA Tracker</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                @Html.ActionLink("CFA Tracker", "index", "Home", htmlAttributes: new { @class = "navbar-brand" })
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+               @Html.Partial("_LoginPartial")
+                
+            </ul>
+            <!-- /.navbar-top-links -->
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            Search Student
+                            @using (Html.BeginForm("Search", "Home"))
+                            {
+                                <div class="input-group custom-search-form">
+                                    <input name ="ssn" type="text" class="form-control" maxlength="11" placeholder="XXX-XX-XXXX">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            }
+                            <!-- /input-group -->
+                        </li>
+                        <li>
+                            @Html.ActionLink("Add Student", "../Processings/Create", null, htmlAttributes: new { @class = "btn btn-danger" })
+
+                        </li>
+                        <li>
+                            <a href="~/Home/index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                           </li>
+                        <li>
+                            <a href="#"><i class="fa fa-database fa-fw"></i> Daily<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    @Html.ActionLink("Personal Queues", "../UserQueue/Index")
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Filing Cabinet", "../UserFilingCabinet/Index")
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Errors", "../UserErrorList/Index")
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Completed Files", "../CompletedFiles/Index")
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Hours", "../Hours/Index", new { user = @User.Identity.GetUserName() })
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Metric Progress Report", "../MetricProgressReport/Index")
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Management<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li class="">
+                                    @Html.ActionLink("Team Management", "../Groups/Index")
+                                    </li>
+                                <li class="">
+                                    <a href="#">Reports<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-third-level collapse" aria-expanded="false" style="height: 0px;">
+                                        <li>
+                                            @Html.ActionLink("Export Queues", "../Export/ExportQueues")
+                                        </li>
+                                        <li>
+                                            @Html.ActionLink("Export Errors", "../Export/ExportErrors")
+                                        </li>
+                                    </ul>
+                                    <!-- /.nav-third-level -->
+                                <li>
+</ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-desktop fa-fw"></i> System<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li class="">
+                                    <a href="#">System Management<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-third-level collapse" aria-expanded="false" style="height: 0px;">
+                                        <li>
+                                            @Html.ActionLink("System Manager", "../SystemManagement/Index")
+                                        </li>
+                                        <li>
+                                            @Html.ActionLink("File Types", "../FileTypes/Index")
+                                        </li>
+                                        <li>
+                                            @Html.ActionLink("Error Types", "../ErrorTypes/Index")
+                                        </li>
+                                        <li>
+                                            @Html.ActionLink("Error Complete Types", "../ErrorCompletes/Index")
+                                        </li>
+                                    </ul>
+                                    <!-- /.nav-third-level -->
+                                <li>
+
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+        <div id="page-wrapper">
+            @RenderBody()
+        </div>
+
+    </div>
+                       
+                       @Scripts.Render("~/bundles/bootstrap")
+                       @RenderSection("scripts", required: false)
+</body>
+</html>

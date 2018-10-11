@@ -1,0 +1,55 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.Processing>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Errors</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Name")
+        </th>
+        <th>
+            @Html.DisplayName("SSN")
+        </th>
+        <th>
+            @Html.DisplayName("Type")
+        </th>
+        <th>
+            @Html.DisplayName("Date Complete")
+        </th>
+        <th>
+            @Html.DisplayName("Username")
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Record.StudentFile.FileName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Record.StudentFile.FileSSN)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Record.FileType.TypeDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProcUserComplete)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.ActionLink("Reassign", "../ErrorOpen/ReassignFinal", new { error = ViewBag.error, procID = item.ProcID, mainReturn = ViewBag.mainReturn })
+            </td>
+        </tr>
+    }
+
+</table>
+
+

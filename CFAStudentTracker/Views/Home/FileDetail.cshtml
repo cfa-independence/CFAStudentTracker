@@ -1,0 +1,52 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.Record>
+
+@{
+    ViewBag.Title = "File Detail";
+}
+
+<h2>@Html.ViewBag.FileName</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ProcPriority)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DOD)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LDA)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FileType.TypeDescription)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StudentFile.FileSSN)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProcPriority)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DOD)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LDA)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FileType.TypeDescription)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StudentFile.FileSSN)
+        </td>
+        <td>
+            @Html.ActionLink("Details", "RecordDetail", new { id=item.RecordID, name=ViewBag.FileName })
+        </td>
+    </tr>
+}
+
+</table>

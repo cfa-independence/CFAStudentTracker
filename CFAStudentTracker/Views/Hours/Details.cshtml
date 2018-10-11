@@ -1,0 +1,52 @@
+﻿@model CFAStudentTracker.Models.Hour
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Hour</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.HourDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HourDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HourAmount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HourAmount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HourNotes)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HourNotes)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Username)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Username)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.HourID }) |
+    <button type="button" class="btn btn-link" onclick="history.go(-1)">
+        Back
+    </button>
+</p>

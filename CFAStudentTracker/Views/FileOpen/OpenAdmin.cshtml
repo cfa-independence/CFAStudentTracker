@@ -1,0 +1,798 @@
+﻿@model CFAStudentTracker.Models.ProcessingDetail
+
+@{
+    ViewBag.Title = "Open";
+}
+
+<div class="row" style="padding-top:5px">
+    <div class="col-xs-12">
+        <button type="button" class="btn btn-link btn-lg" onclick="history.go(-1)">
+            Back
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12"></div>
+    <h2>@Model.Rec.StudentFile.FileName </h2>
+    <hr />
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Manage File
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayName("Assigned To")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Proc.Username)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("SSN")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Rec.StudentFile.FileSSN)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Type")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Rec.FileType.TypeDescription)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("High Priority")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Rec.ProcPriority)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Date In Queue")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Proc.ProcInQueue)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Date Given")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Proc.ProcToUser)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Date Complete")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Proc.ProcUserComplete)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayName("Process Date")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Rec.DOD)
+                        </dd>
+
+                        <dt>
+
+                        </dt>
+
+                        <dd>
+                            @Html.ActionLink("Edit Info", "Edit", new { id = Model.Rec.RecordID, mainReturn = ViewBag.OpenReturn })
+                        </dd>
+
+                    </dl>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div style="padding-top:5px">
+                            @if (Model.Proc.ProcUserComplete != null)
+                            {
+
+                                @Html.ActionLink("Uncomplete", "UncompleteFile", new { pID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-danger btn-lg", style = "width:100%" })
+
+                            }
+                            else
+                            {
+
+                                @Html.ActionLink("Complete", "CompleteFile", new { pID = Model.Proc.ProcID, qID = Model.Proc.QueueID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-success btn-lg", style = "width:100%" })
+
+                            }
+
+                        </div>
+                        <div style="padding-top:5px">
+                            @if (Model.Proc.InFilingCabinet)
+                            {
+
+                                @Html.ActionLink("Remove From Cabinet", "FilingCabinet", new { pID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-primary btn-lg", style = "width:100%" })
+
+                            }
+                            else
+                            {
+
+                                @Html.ActionLink("Put In Cabinet", "FilingCabinet", new { pID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-primary btn-lg", style = "width:100%" })
+
+                            }
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-6">
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Reassign", "Reassign", new { ProcessingID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-info btn-lg", style = "width:100%" })
+                        </div>
+                        <div style="padding-top:5px">
+                            @if (Model.Rec.ProcPriority)
+                            {
+
+                                @Html.ActionLink("Unprioritize", "ChangePriority", new { rID = Model.Rec.RecordID, rP = Model.Rec.ProcPriority, queue = Model.Proc.QueueID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-warning btn-lg", style = "width:100%" })
+
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Prioritize", "ChangePriority", new { rID = Model.Rec.RecordID, rP = Model.Rec.ProcPriority, queue = Model.Proc.QueueID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-warning btn-lg", style = "width:100%" })
+
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Record Notes
+            </div>
+            <div class="panel-body">
+                @Html.ActionLink("Add Note", "AddNote", new { ProcessingID = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-primary" })
+                <dl class="media-middle">
+                    @foreach (var item in Model.Rec.Note)
+                    {
+                        <dt>@item.Username</dt>
+                        <dd style="padding-bottom: 5px;">@item.Note1</dd>
+                    }
+
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        @using (Html.BeginForm("Calculate", "FileOpen", new { mainReturn = ViewBag.OpenReturn }))
+        {            
+            @Html.HiddenFor(vm => vm.Rec.RecordID)
+            <div class="panel panel-primary" id="calc">
+                <div class="panel-heading">
+                    <span>Calculator</span>
+                    <button type="submit" class="btn btn-info">Calculate</button>
+                    <span class="pull-right"></span>
+                </div>
+                <div class="panel-body">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#direct-loan" data-toggle="tab">Direct Loans</a>
+                        </li>
+                        <li>
+                            <a href="#pell" data-toggle="tab">Pell</a>
+                        </li>
+                        <li>
+                            <a href="#budget" data-toggle="tab">Budget</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active panel panel-default col-xs-12" id="direct-loan" style="padding-top: 20px; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#direct-loan-basic-info">
+                                            <h4 class="panel-title">
+                                                Basic Loan Information
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="direct-loan-basic-info">
+                                            <div class="panel-body">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-3">Dependency Status</label>
+                                                        <div class="col-md-9">
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.DependencyStatus, "Independent") Independent
+                                                            </label>
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.DependencyStatus, "Dependent") Dependent
+                                                            </label>
+                                                            <br />
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.DependencyStatus, "DependentOverride") Override to Independent
+                                                            </label>
+                                                            <br class="visible-xs" />
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.DependencyStatus, "DependentNoParentInfo") No Parent Info
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-3">Academic Year</label>
+                                                        <div class="col-md-9">
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AcademicYear, 1) 1<sup>st</sup>
+                                                            </label>
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AcademicYear, 2) 2<sup>nd</sup>
+                                                            </label>
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AcademicYear, 3) 3<sup>rd</sup> / 4<sup>th</sup> / 5<sup>th</sup>
+                                                            </label>
+                                                            <br class="visible-xs" />
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AcademicYear, 6) Graduate
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.SubAggLimit, "Sub Agg Limit", htmlAttributes: new { @class = "control-label col-md-3" })
+                                                        <div class="col-md-9">
+                                                            <div class="input-group">
+                                                                <span class="input-group-addon">$</span>
+                                                                @Html.TextBoxFor(vm => vm.Rec.SubAggLimit, htmlAttributes: new { @class = "form-control", @style = "text-align: right;" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.CombinedAggLimit, "Combined Agg Limit", htmlAttributes: new { @class = "control-label col-md-3" })
+                                                        <div class="col-md-9">
+                                                            <div class="input-group">
+                                                                <span class="input-group-addon">$</span>
+                                                                @Html.TextBoxFor(vm => vm.Rec.CombinedAggLimit, htmlAttributes: new { @class = "form-control", @style = "text-align: right;" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#direct-loan-existing-loans">
+                                            <h4 class="panel-title">
+                                                Existing Loan Information
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="direct-loan-existing-loans">
+                                            <div class="panel-body">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-4">Existing Award Year Ends</label>
+                                                        <div class="col-md-8">
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.ExistingAYEndsBeforeTermTwo, true) Before 2<sup>nd</sup> Term
+                                                            </label>
+                                                            <label class="radio-inline">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.ExistingAYEndsBeforeTermTwo, false) After 2<sup>nd</sup> Term
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.SubAmountUsed, "Sub Amount Used", htmlAttributes: new { @class = "control-label col-md-4" })
+                                                        <div class="col-md-8">
+                                                            <div class="input-group">
+                                                                <span class="input-group-addon">$</span>
+                                                                @Html.TextBoxFor(vm => vm.Rec.SubAmountUsed, htmlAttributes: new { @class = "form-control", @style = "text-align: right;" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.UnsubAmountUsed, "Unsub Amount Used", htmlAttributes: new { @class = "control-label col-md-4" })
+                                                        <div class="col-md-8">
+                                                            <div class="input-group">
+                                                                <span class="input-group-addon">$</span>
+                                                                @Html.TextBoxFor(vm => vm.Rec.UnsubAmountUsed, htmlAttributes: new { @class = "form-control", @style = "text-align: right;" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 5px;">
+                                <div class="col-lg-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#direct-loan-prorated-info">
+                                            <h4 class="panel-title">
+                                                Prorated Information
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="direct-loan-prorated-info">
+                                            <div class="panel-body">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.IsProratedLoan, "Prorated Loan", htmlAttributes: new { @class = "control-label col-md-3" })
+                                                        <div class="col-md-9">
+                                                            @Html.CheckBoxFor(vm => vm.Rec.IsProratedLoan)
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.NumCredits, "Credits", htmlAttributes: new { @class = "control-label col-md-3" })
+                                                        <div class="col-md-9">
+                                                            @Html.TextBoxFor(vm => vm.Rec.NumCredits, htmlAttributes: new { @class = "form-control ", @style = "width: 3.5em;" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#direct-loan-sula-info">
+                                            <h4 class="panel-title">
+                                                SULA Information
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="direct-loan-sula-info">
+                                            <div class="panel-body">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-4">Term 1 Attendance</label>
+                                                        <div class="btn-group btn-group-toggle col-md-8" data-toggle="buttons">
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AttendanceTermOne, "full-time") Full Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AttendanceTermOne, "three-quarter-time") &frac34; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AttendanceTermOne, "half-time") &frac12; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AttendanceTermOne, "less-than-half-time") &lt; &frac12; Time
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-4">Term 2 Attendance</label>
+                                                        <div class="btn-group btn-group-toggle col-md-8" data-toggle="buttons">
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AttendanceTermTwo, "full-time") Full Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AttendanceTermTwo, "three-quarter-time") &frac34; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AttendanceTermTwo, "half-time") &frac12; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.AttendanceTermTwo, "less-than-half-time") &lt; &frac12; Time
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.NumAcademicYearsInProgram, "Academic Years in Program", htmlAttributes: new { @class = "control-label col-md-4" })
+                                                        <div class="col-md-8">
+                                                            @Html.TextBoxFor(vm => vm.Rec.NumAcademicYearsInProgram, htmlAttributes: new { @class = "form-control", @style = "width: 2.5em;" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane panel panel-default col-xs-12" id="pell" style="padding-top: 20px; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#pell-basic-info">
+                                            <h4 class="panel-title">
+                                                Basic Pell Information
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="pell-basic-info">
+                                            <div class="panel-body">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-3">Award Year</label>
+                                                        <div class="col-md-9">
+                                                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                                <label class="btn btn-default">
+                                                                    @Html.RadioButtonFor(vm => vm.Rec.AwardYear, "'17-'18") '17-'18
+                                                                </label>
+                                                                <label class="btn btn-default">
+                                                                    @Html.RadioButtonFor(vm => vm.Rec.AwardYear, "'18-'19") '18-'19
+                                                                </label>
+                                                                <label class="btn btn-default">
+                                                                    @Html.RadioButtonFor(vm => vm.Rec.AwardYear, "'19-'20") '19-'20
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.EFC, htmlAttributes: new { @class = "control-label col-md-3" })
+                                                        <div class="col-md-9">
+                                                            @Html.TextBoxFor(vm => vm.Rec.EFC, new { @class = "form-control", @style = "max-width: 4em;" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.LEU, htmlAttributes: new { @class = "control-label col-md-3" })
+                                                        <div class="col-md-9">
+                                                            <div class="input-group" style="max-width: 9em;">
+                                                                @Html.TextBoxFor(vm => vm.Rec.LEU, new { @class = "form-control" })
+                                                                <span class="input-group-addon">%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#pell-existing-usage">
+                                            <h4 class="panel-title">
+                                                Existing Pell Usage
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="pell-existing-usage">
+                                            <div class="panel-body">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.PercentPellUsed, "% Used from Award Year", htmlAttributes: new { @class = "control-label col-md-5" })
+                                                        <div class="col-md-7">
+                                                            <div class="input-group" style="max-width: 9em;">
+                                                                @Html.TextBoxFor(vm => vm.Rec.PercentPellUsed, new { @class = "form-control" })
+                                                                <span class="input-group-addon">%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#pell-terms">
+                                            <h4 class="panel-title">
+                                                Terms
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="pell-terms">
+                                            <div class="panel-body">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-3">Term 1 Status</label>
+                                                        <div class="btn-group btn-group-toggle col-md-9" data-toggle="buttons">
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermOne, "full-time") Full Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermOne, "three-quarter-time") &frac34; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermOne, "half-time") &frac12; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermOne, "less-than-half-time") &lt; &frac12; Time
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-3">Term 2 Status</label>
+                                                        <div class="btn-group btn-gorup-toggle col-md-9" data-toggle="buttons">
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermTwo, "full-time") Full Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermTwo, "three-quarter-time") &frac34; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermTwo, "half-time") &frac12; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermTwo, "less-than-half-time") &lt; &frac12; Time
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-3">Term 3 Status</label>
+                                                        <div class="btn-group btn-group-toggle col-md-9" data-toggle="buttons">
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermThree, "full-time") Full Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermThree, "three-quarter-time") &frac34; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermThree, "half-time") &frac12; Time
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.StatusTermThree, "less-than-half-time") &lt; &frac12; Time
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane panel panel-default col-xs-12" id="budget" style="border-top: none; border-top-left-radius: 0; border-bottom-right-radius: 0;">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#budget-basic-info">
+                                            <h4 class="panel-title">
+                                                Basic Budget Information
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="budget-basic-info">
+                                            <div class="panel-body">
+                                                <div class="form-horizontal">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(vm => vm.Rec.IsOnlineStudent, "Online Student", htmlAttributes: new { @class = "control-label col-md-3" })
+                                                        <div class="col-md-9">
+                                                            @Html.CheckBoxFor(vm => vm.Rec.IsOnlineStudent)
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="control-label col-md-3">Award Year</label>
+                                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.BudgetAwardYear, "'17-'18") '17-'18
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.BudgetAwardYear, "'18-'19") '18-'19
+                                                            </label>
+                                                            <label class="btn btn-default">
+                                                                @Html.RadioButtonFor(vm => vm.Rec.BudgetAwardYear, "'19-'20") '19-'20
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        
+                                                    </div>
+                                                </div>
+                                                <dl class="dl-horizontal">
+                                                    <dt>Online Student</dt>
+                                                    <dd>
+                                                    </dd>
+
+                                                    <dt>Award Year</dt>
+                                                    <dd>
+                                                        <div class="btn-group btn-group-toggle btn-group-sm btn-group-justified" data-toggle="buttons">
+                                                            
+                                                        </div>
+                                                    </dd>
+
+                                                    <dt>State on ISIR</dt>
+                                                    <dd>
+                                                        @Html.DropDownListFor(vm => vm.Rec.StateOnISIR, new SelectList(Model.States, "Value", "Text"), new { @class = "form-control" })
+                                                    </dd>
+
+                                                    <dt>Living w/ Parents</dt>
+                                                    <dd>
+                                                        @Html.CheckBoxFor(vm => vm.Rec.IsWithParents)
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-target="#budget-tuition-info">
+                                            <h4 class="panel-title">
+                                                Tuition Information
+                                            </h4>
+                                        </div>
+                                        <div class="panel-collapse collapse in" id="budget-tuition-info">
+                                            <div class="panel-body">
+                                                <dl class="dl-horizontal">
+                                                    <dt>Estimated Credits in AY</dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(vm => vm.Rec.NumEstimatedCredits, new { @class = "form-control" })
+                                                    </dd>
+
+                                                    <dt>$ per Credit</dt>
+                                                    <dd>
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon">$</span>
+                                                            @Html.TextBoxFor(vm => vm.Rec.CostPerCredit, new { @class = "form-control" })
+                                                        </div>
+                                                    </dd>
+
+                                                    <dt>Number of Months in AY</dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(vm => vm.Rec.NumMonthsInAY, new { @class = "form-control" })
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+<div class="row">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Errors
+        </div>
+        <div class="panel-body">
+            @Html.ActionLink("Add Error", "Create", new { id = Model.Proc.ProcID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-danger" })
+            <table class="table">
+                <tr>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        Date Found
+                    </th>
+                    <th>
+                        Complete Type
+                    </th>
+                    <th>
+                        Complete Date
+                    </th>
+                    <th>
+                        Note
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model.ProcErrors)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ErrorType.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateFound)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ErrorComplete.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateComplete)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Note)
+                        </td>
+                        <td>
+                            @if (item.ErrorComplete == null)
+                            {
+                                @Html.ActionLink("Complete", "CompleteError", new { error = item.ErrorID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-success" })
+
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Uncomplete", "UncompleteError", new { error = item.ErrorID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-warning" })
+
+                            }
+                        </td>
+                        <td>
+                            @Html.ActionLink("Reassign", "ReassignError", new { error = item.ErrorID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-warning" })
+                        </td>
+                        <td>
+                            @Html.ActionLink("Delete", "DeleteError", new { id = item.ErrorID, mainReturn = ViewBag.OpenReturn }, htmlAttributes: new { @class = "btn btn-danger" })
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "EditError", new { error = item.ErrorID, mainReturn = ViewBag.OpenReturn })
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Processing Records for Student
+        </div>
+        <div class="panel-body">
+            <table class="table">
+                <tr>
+                    <th>
+                        Queue
+                    </th>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        To User
+                    </th>
+                    <th>
+                        Completed
+                    </th>
+                    <th>
+                        User
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model.PreviousProcessed)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.p.Queue.QueueDescription)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.t.TypeDescription)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.p.ProcToUser)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.p.ProcUserComplete)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.p.Username)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Open", "OpenAdmin", new { id = item.p.ProcID, mainReturn = ViewBag.mainReturn })
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="padding-top:5px">
+    <button type="button" class="btn btn-link btn-lg" onclick="history.go(-1)">
+        Back
+    </button>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('input:checked').closest('label.btn').addClass('active');        
+    });
+</script>

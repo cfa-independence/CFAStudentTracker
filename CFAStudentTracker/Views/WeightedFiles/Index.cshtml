@@ -1,0 +1,37 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.WeightedFile>
+
+@{
+    ViewBag.Title = "Weighted Files";
+}
+
+<h2>Weighted Files</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create", new { id = ViewBag.QueueID })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.WeightedAmount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FileType.TypeDescription)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.WeightedAmount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FileType.TypeDescription)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit",new { id = item.QueueID, fid = item.FileTypeID }, new { /* id=item.PrimaryKey */ })
+        </td>
+    </tr>
+}
+
+</table>

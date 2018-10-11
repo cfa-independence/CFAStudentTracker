@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "Batch";
+}
+
+<form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+    <h4>Column names REQUIRED</h4>
+    <h5>ProcID</h5>
+    <h5>Note</h5>
+    <div class="form-group">
+        <label class="control-label col-md-2" for="file">Filename:</label>
+        <input class="form-control" type="file" name="file" id="file" />
+    </div>
+    <input type="hidden" id="QueueID" name="QueueID" value=@ViewBag.QueueID>
+    <input type="submit" />
+</form>

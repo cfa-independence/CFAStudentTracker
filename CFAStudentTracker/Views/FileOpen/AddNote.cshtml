@@ -1,0 +1,42 @@
+﻿@model CFAStudentTracker.Models.Note
+
+@{
+    ViewBag.Title = "AddNote";
+}
+
+<h2>AddNote</h2>
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Note</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("Note", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Note1, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Note1, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @Html.HiddenFor(model => model.RecordID)
+        
+        @Html.HiddenFor(model=>model.Username)
+        @Html.Hidden("ProcessingID", new { ProcessingID = ViewBag.ProcessingID })
+        @Html.Hidden("mainReturn", new { mainReturn = ViewBag.mainReturn })
+        @Html.Hidden("previousPage")
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    <button type="button" class="btn btn-link" onclick="history.go(-1)">
+        Back
+    </button>
+</div>

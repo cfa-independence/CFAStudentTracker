@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="5dc8eb5d52314aa4a7896e77c60f0694" Name="Diagram1" ZoomLevel="72">
+        <EntityTypeShape EntityType="CFAModel.FileType" Width="1.5" PointX="11.75" PointY="4.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.GlobalSettings" Width="1.5" PointX="0.625" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Group" Width="1.5" PointX="1" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Hour" Width="1.5" PointX="0.625" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Note" Width="1.5" PointX="7" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Processing" Width="1.5" PointX="6.875" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Queue" Width="1.5" PointX="4.375" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.QueueOrder" Width="1.5" PointX="1" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.QueuePriority" Width="1.5" PointX="9.375" PointY="4.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Record" Width="1.5" PointX="14.25" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.StudentFile" Width="1.5" PointX="12.125" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.User" Width="1.5" PointX="4.125" PointY="2" IsExpanded="true" />
+        <AssociationConnector Association="CFAModel.FK_QPType" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_RecordType" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_QueueGroup" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_HourUser" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_NoteRecord" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_NoteUser" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_ProcessingQueue" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_ProcessingRecord" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_ProcessingUser" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_QPQueue" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_QueueNext" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_QueueOrder" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.FK_RecordFile" ManuallyRouted="false" />
+        <AssociationConnector Association="CFAModel.QueueTeam" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="CFAModel.ProcessingError" Width="1.5" PointX="9" PointY="7.875" />
+        <AssociationConnector Association="CFAModel.FK__Processin__ProcI__32767D0B" />
+        <EntityTypeShape EntityType="CFAModel.ErrorComplete" Width="1.5" PointX="12.125" PointY="9.375" />
+        <EntityTypeShape EntityType="CFAModel.ErrorType" Width="1.5" PointX="11.75" PointY="7.25" />
+        <AssociationConnector Association="CFAModel.FK__Processin__Error__345EC57D" />
+        <AssociationConnector Association="CFAModel.FK__Processin__Error__336AA144" />
+        <AssociationConnector Association="CFAModel.FK_AuditQueue" />
+        <EntityTypeShape EntityType="CFAModel.WeightedFile" Width="1.5" PointX="3.375" PointY="11.75" />
+        <AssociationConnector Association="CFAModel.FK_FileWeight" />
+        <AssociationConnector Association="CFAModel.FK_QueueWeight" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

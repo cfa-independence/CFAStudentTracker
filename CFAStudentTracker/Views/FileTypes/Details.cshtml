@@ -1,0 +1,28 @@
+﻿@model CFAStudentTracker.Models.FileType
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>FileType</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TypeDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TypeDescription)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.FileTypeID }) |
+    <button type="button" class="btn btn-link" onclick="history.go(-1)">
+        Back
+    </button>
+</p>

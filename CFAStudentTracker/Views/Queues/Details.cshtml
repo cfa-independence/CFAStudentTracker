@@ -1,0 +1,227 @@
+﻿@model CFAStudentTracker.Models.QueueViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+
+@* Files in queue & Users in queue & queue Group manager *@
+<div class="row"><h1>@Model.queue.QueueDescription</h1></div>
+<div class="row">
+    <div class="col-lg-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Management
+            </div>
+            <div class="panel-body">
+                <div class="row" style="padding-bottom:10px">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayName("Priority: ")
+                        </dt>
+                        <dd>
+                            @Html.DisplayName(Model.queue.QueueOrder.QueueOrderDescription)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Users: ")
+                        </dt>
+                        <dd>
+                            @Html.DisplayName(Model.queue.User.Count.ToString())
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Group: ")
+                        </dt>
+                        <dd>
+                            @Model.queue.Group.GroupName.ToString()
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Auditing: ")
+                        </dt>
+                        <dd>
+                           @if (Model.queue.AuditQueue)
+            {
+                            @Html.DisplayName("Yes")
+                           }
+                           else
+                           {
+                            @Html.DisplayName("No")
+                           }
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Assigned Audit Queue: ")
+                        </dt>
+                        <dd>
+                            @Html.DisplayName(Model.SendAuditQueue)
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Percent Audit: ")
+                        </dt>
+                        <dd>
+                            @Html.DisplayName(Model.precentAudit.ToString())
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Files to Each User: ")
+                        </dt>
+                        <dd>
+                            @Html.DisplayName(Model.queue.FilesInQueue.ToString())
+                        </dd>
+                        <dt>
+                            @Html.DisplayName("Next Queue: ")
+                        </dt>
+                        <dd>
+                           @if (ViewBag.NextQueue == "")
+                           {
+
+                           }
+                           else
+                           {
+                            @Html.ActionLink(Model.queue.Queue2.QueueDescription, "Details", new { id = Model.queue.QueueNextQueue })
+                           }
+
+                        </dd>
+                    </dl>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("View Files", "../Processings/Index", new { i = Model.queue.QueueID }, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Priority", "../QueuePriorities/Index", new { QueueID = Model.queue.QueueID }, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Users", "../QueueTeam/Index", new { id = Model.queue.QueueID }, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("File Weights", "../WeightedFiles/Index", new { id = Model.queue.QueueID }, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Group", "Edit", new { id = Model.queue.QueueID }, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Audit", "Audit", new { id = Model.queue.QueueID }, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Edit", "Edit", new { id = Model.queue.QueueID }, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%;" })
+
+                        </div>
+                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Totals
+            </div>
+            <div class="panel-body">
+                <h3>Total: @Model.queueStats.queueAmount</h3>
+                <h5>Priority: @Model.queueStats.Priorities</h5>
+                @foreach (var x in Model.queueStats.fileTypeAmount)
+                {
+                    <p>
+                        <strong>@x.MyString</strong>
+                        <span class="pull-right text-muted">@x.MyInt in queue</span>
+                    </p>
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@x.MyInt" aria-valuemin="0" aria-valuemax="@Model.queueStats.highestTypeAmount" style="width: @(x.MyInt / Model.queueStats.highestTypeAmount * 100)%">
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@*<div class="row">
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Chart
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <canvas id="myCanvas" width="400" height="400">
+
+                </canvas>
+
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    </div>*@
+<div class="row">
+    <div class="col-lg-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                User Data
+            </div>
+            <div class="panel-body">
+
+                @foreach (var x in Model.userStats)
+                {
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <p>
+                                <strong>@Html.ActionLink(x.user.Username, "UserQueue", new { userName = x.user.Username, queueID = Model.queue.QueueID }) </strong>
+                                <span class="pull-right text-muted">@x.processedToday Production Hours</span>
+                            </p>
+                            <div class="progress progress-striped active">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@x.processedToday" aria-valuemin="0" aria-valuemax="@Model.topUser" style="width: @(x.processedToday / Model.topUser * 100)%">
+
+                                </div>
+                            </div>
+                            <span class="pull-right text-muted">@x.filingCabinet in cabinet</span>
+                            <h4>
+                                <a data-toggle="collapse" data-parent="#accordion" href="#@(Model.userStats.IndexOf(x) )">Details</a>
+                            </h4>
+                        </div>
+                        <div id="@(Model.userStats.IndexOf(x) )" class="panel-collapse collapse" aria-expanded="false">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                @foreach (var item in x.typeCount)
+                                                {
+                                                    <th>@item.MyString</th>
+
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="success">
+                                                @foreach (var item in x.typeCount)
+                                                {
+                                                    <td>@item.MyInt</td>
+
+                                                }
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <a href="javascript:void(0);" onclick="history.go(-1);">Back to Details</a>
+</div>
+@*@Html.CreateChart("myCanvas", barChart)*@

@@ -1,0 +1,181 @@
+﻿@model CFAStudentTracker.Models.ViewModels.GroupManagementVM
+@{
+    ViewBag.Title = "OpenGroupManagement";
+}
+<h2>@ViewBag.GroupName</h2>
+
+
+
+<div class="row">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Queues
+        </div>
+        <div class="panel-body">
+            <p>
+                @Html.ActionLink("Create New", "Create")
+            </p>
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>
+                                @Html.DisplayName("Description")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Next Queue")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Order")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Auditing?")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Files")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Users")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Avg Time")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Oldest File")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Oldest Proc Date")
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Queues)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.ActionLink("Manage", "../Queues/Details", new { id = item.q.QueueID })
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.q.QueueDescription)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.NextQueue)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.q.QueueOrder.QueueOrderDescription)
+                                </td>
+                                <td>
+                                    @if (item.Auditing)
+                {
+                                        @Html.DisplayName("Yes")
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayName("No")
+                                    }
+                                </td>
+                                <td>
+                                    @item.FilesInQueue.ToString()
+                                </td>
+                                <td>
+                                    @item.UsersInQueue.ToString()
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AvgQueueTime) Days
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OldestFileInQueue) Days
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OldestProcDate)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Delete", "Delete", new { id = item.q.QueueID })
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            <!-- /.col-lg-12 -->
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-lg-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Actions
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("View Master Metric Progress Report", "../MasterMetricProgressReport/Index", new { id = Model.id }, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Import Schedules", "../Export/ImportTimeSheet", null, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+                        <div style="padding-top:5px">
+                            @Html.ActionLink("Import Errors", "../Export/ImportRejects", null, htmlAttributes: new { @class = "btn btn-primary", style = "width:100%" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                User Management
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayName("Name")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Production Hours")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Pending Errors")
+                            </th>
+                            <th>
+                            </th>
+                            <th>
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.UserManage)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.ActionLink(item.User, "../Queues/UserQueue", new { userName = item.User })
+                                </td>
+                                <td>
+                                    @item.ProcessedToday
+                                </td>
+                                <td>
+                                    @Html.ActionLink(item.OutstandingErrors.ToString(), "../UserErrorList/Index", new { username = item.User })
+                                </td>
+                                <td><b>@Html.ActionLink("Schedule", "../Hours/AdminIndex", new { user = @item.User })</b></td>
+                                <td><b>@Html.ActionLink("Files Completed", "../CompletedFiles/Index", new { username = @item.User })</b></td>
+                                <td><b>@Html.ActionLink("Errors Completed", "../UserErrorList/CompletedErrors", new { username = item.User })</b></td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+                <!-- /.col-lg-12 -->
+            </div>
+        </div>
+    </div>
+
+</div>

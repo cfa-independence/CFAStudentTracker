@@ -1,0 +1,82 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.ViewModels.ProcessingVM>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Files In Queue</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+    <div class="col-md-2">
+        @Html.ActionLink("Back To Queue", "../Queues/Details", new  {id = ViewBag.queueID }, htmlAttributes: new { @class = "btn btn-primary" })
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Add Files to Queue</h3>
+        <div class="col-md-2">
+            @Html.ActionLink("Add", "Create", null, htmlAttributes: new { @class = "btn btn-primary" })
+        </div>
+        <div class="col-md-2">
+            @Html.ActionLink("Import", "Batch", new { id = ViewBag.queueID }, htmlAttributes: new { @class = "btn btn-success" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h3>Remove Files from Queue</h3>
+        <div class="col-md-2">
+            @Html.ActionLink("Batch Remove", "BatchRemove", new { id = ViewBag.queueID }, htmlAttributes: new { @class = "btn btn-danger" })
+        </div>
+    </div>
+   
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayName("Status")
+                </th>
+                
+                <th>
+                    @Html.DisplayName("Type")
+                </th>
+                <th>
+                    @Html.DisplayName("Name")
+                </th>
+                <th>
+                    @Html.DisplayName("SSN")
+                </th>
+                <th>@Html.DisplayName("Process Date")</th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.status)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.p.Record.FileType.TypeDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.p.Record.StudentFile.FileName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.p.Record.StudentFile.FileSSN)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProcDate)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Open", "../FileOpen/OpenAdmin", new { id = item.p.ProcID }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.p.ProcID })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>

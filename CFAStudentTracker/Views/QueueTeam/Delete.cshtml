@@ -1,0 +1,31 @@
+﻿
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+
+<hr />
+<h3>Are you sure you want to remove this user?</h3>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Username
+        </dt>
+
+        <dd>
+            @ViewBag.user
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("user")
+        @Html.Hidden("id")
+        <div class="form-actions no-color">
+            <input type="submit" value="Remove" class="btn btn-danger" /> |
+        </div>
+    }
+</div>

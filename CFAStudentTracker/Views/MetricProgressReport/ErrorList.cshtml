@@ -1,0 +1,56 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.ProcessingError>
+
+@{
+    ViewBag.Title = "ErrorList";
+}
+
+<h2>@Model.First().Processing.Username</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("SSN")
+        </th>
+        <th>
+            @Html.DisplayName("Error Type")
+        </th>
+        <th>
+            @Html.DisplayName("Found")
+        </th>
+        <th>
+            @Html.DisplayName("Completed")
+        </th>
+        <th>
+            @Html.DisplayName("Complete Type")
+        </th>
+        <th>
+            @Html.DisplayName("Note")
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Processing.Record.StudentFile.FileSSN)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ErrorType.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DateFound)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DateComplete)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ErrorComplete.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Note)
+        </td>
+        
+
+    </tr>
+}
+
+</table>

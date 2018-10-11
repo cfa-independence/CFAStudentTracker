@@ -1,0 +1,380 @@
+﻿@model CFAStudentTracker.Models.MetricProgressViewModel
+
+@{
+    ViewBag.Title = "Metric Progress Report";
+}
+
+<div class="row">
+    <h1>
+        @Model.username
+    </h1>
+    <h2>Metric Progress Report</h2>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Overview
+
+                <h5>Last Updated @Model.LastUpdated.ToString("MM/dd/yyyy")</h5>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>14 Days</th>
+                                <th>28 Days</th>
+                                <th>56 Days</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Productivity Percent</td>
+                                <td>@String.Format("{0:#,0.000}", Model.PerHour14 * 100)%</td>
+                                <td>@String.Format("{0:#,0.000}", Model.PerHour28 * 100)%</td>
+                                <td>@String.Format("{0:#,0.000}", Model.PerHour56 * 100)%</td>
+                            </tr>
+                            <tr>
+                                <td>Reject Percent</td>
+                                <td>@String.Format("{0:#,0.000}", Model.ErrPercent14)%</td>
+                                <td>@String.Format("{0:#,0.000}", Model.ErrPercent28)%</td>
+                                <td>@String.Format("{0:#,0.000}", Model.ErrPercent56)%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Files Processed
+            </div>
+            <div class="panel-body">
+                <strong>14 Days</strong>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                @foreach (var item in Model.FilesProcessed14Day)
+                                {
+                                    <th>@item.MyString</th>
+
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="success">
+                                @foreach (var item in Model.FilesProcessed14Day)
+                                {
+                                    <td>@item.MyInt</td>
+
+                                }
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <strong>28 Days</strong>
+               
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    @foreach (var item in Model.FilesProcessed28Day)
+                                    {
+                                        <th>@item.MyString</th>
+
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="success">
+                                    @foreach (var item in Model.FilesProcessed28Day)
+                                    {
+                                        <td>@item.MyInt</td>
+
+                                    }
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+
+
+
+                <strong>56 Days</strong>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                @foreach (var item in Model.FilesProcessed56Day)
+                                {
+                                    <th>@item.MyString</th>
+
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="success">
+                                @foreach (var item in Model.FilesProcessed56Day)
+                                {
+                                    <td>@item.MyInt</td>
+
+                                }
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+
+      
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Errors
+            </div>
+            <div class="panel-body">
+                <h2>Errors Not Completed</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                @foreach (var item in Model.notComplete)
+                                {
+                                    <th>@item.MyString</th>
+
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="success">
+                                @foreach (var item in Model.notComplete)
+                                {
+                                    <td>@item.MyInt</td>
+
+                                }
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Errors Completed</h2>
+                @*14 Day Errors*@
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <p>
+                            @*<strong>@Html.ActionLink(x.user.Username, "UserQueue", new { userName = x.user.Username, queueID = Model.queue.QueueID }) </strong>*@
+                            <strong>@Html.ActionLink("View All Errors in 14 Days", "ErrorList", new { username = Model.username, lastUpdated = Model.LastUpdated, days = 14 })</strong>
+                            <span class="pull-right text-muted">@Model.error14.Last().MyInt errors</span>
+                        </p>
+                        <h4>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#error14">View Error Summary</a>
+                        </h4>
+                    </div>
+                    <div id="error14" class="panel-collapse collapse" aria-expanded="true">
+                        <div class="panel-body">
+                            <h4>Marked Officer Error</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            @foreach (var item in Model.error14)
+                                            {
+                                                <th>@item.MyString</th>
+
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="success">
+                                            @foreach (var item in Model.error14)
+                                            {
+                                                <td>@item.MyInt</td>
+
+                                            }
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>Marked Not At Fault</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            @foreach (var item in Model.nerror14)
+                                            {
+                                                <th>@item.MyString</th>
+
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="success">
+                                            @foreach (var item in Model.nerror14)
+                                            {
+                                                <td>@item.MyInt</td>
+
+                                            }
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*28 Day Complete*@
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <p>
+                            @*<strong>@Html.ActionLink(x.user.Username, "UserQueue", new { userName = x.user.Username, queueID = Model.queue.QueueID }) </strong>*@
+                            <strong>@Html.ActionLink("View All Errors in 28 Days", "ErrorList", new { username = Model.username, lastUpdated = Model.LastUpdated, days = 28 })</strong>
+                            <span class="pull-right text-muted">@Model.error28.Last().MyInt errors</span>
+                        </p>
+                        <h4>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#error28">View Error Summary</a>
+                        </h4>
+                    </div>
+                    <div id="error28" class="panel-collapse collapse" aria-expanded="true">
+                        <div class="panel-body">
+                            <h4>Marked Officer Error</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            @foreach (var item in Model.error28)
+                                            {
+                                                <th>@item.MyString</th>
+
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="success">
+                                            @foreach (var item in Model.error28)
+                                            {
+                                                <td>@item.MyInt</td>
+
+                                            }
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>Marked Not At Fault</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            @foreach (var item in Model.nerror28)
+                                            {
+                                                <th>@item.MyString</th>
+
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="success">
+                                            @foreach (var item in Model.nerror28)
+                                            {
+                                                <td>@item.MyInt</td>
+
+                                            }
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*56 Day Complete*@
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <p>
+                            @*<strong>@Html.ActionLink(x.user.Username, "UserQueue", new { userName = x.user.Username, queueID = Model.queue.QueueID }) </strong>*@
+                            <strong>@Html.ActionLink("View All Errors in 56 Days", "ErrorList", new { username = Model.username, lastUpdated = Model.LastUpdated, days = 56 })</strong>
+                            <span class="pull-right text-muted">@Model.error56.Last().MyInt errors</span>
+                        </p>
+                        <h4>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#error56">View Error Summary</a>
+                        </h4>
+                    </div>
+                    <div id="error56" class="panel-collapse collapse" aria-expanded="true">
+                        <div class="panel-body">
+                            <h4>Marked Officer Error</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            @foreach (var item in Model.error56)
+                                            {
+                                                <th>@item.MyString</th>
+
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="success">
+                                            @foreach (var item in Model.error56)
+                                            {
+                                                <td>@item.MyInt</td>
+
+                                            }
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4>Marked Not At Fault</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            @foreach (var item in Model.nerror56)
+                                            {
+                                                <th>@item.MyString</th>
+
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="success">
+                                            @foreach (var item in Model.nerror56)
+                                            {
+                                                <td>@item.MyInt</td>
+
+                                            }
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+﻿@model IEnumerable<CFAStudentTracker.Models.Hour>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Hours Worked</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.HourDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HourAmount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.HourNotes)
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @String.Format("{0:d}", item.HourDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.HourAmount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.HourNotes)
+        </td>
+    </tr>
+}
+
+</table>
