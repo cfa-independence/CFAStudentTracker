@@ -5,10 +5,9 @@
 }
 
 <div class="row" style="padding-top:5px">
-    <button type="button" class="btn btn-primary btn-lg" onclick="history.go(-1)">
-        Back
-    </button>    
+    @Html.ActionLink("Back To List", "Route", new { mainReturn = ViewBag.mainReturn }, htmlAttributes: new { @class = "btn btn-primary btn-lg" })
 </div>
+
 <hr />
 <div class="row">
     <h2>@Model.Rec.StudentFile.FileName </h2>
@@ -283,7 +282,6 @@
 </div>
 
 <div class="row" style="padding-top:5px">
-    <button type="button" class="btn btn-link" onclick="history.go(-1)">
-        Back
-    </button>
+    @Html.ActionLink("Back To List", "Route", new { mainReturn = ViewBag.mainReturn }, htmlAttributes: new { @class = "btn btn-primary btn-lg" })
 </div>
+

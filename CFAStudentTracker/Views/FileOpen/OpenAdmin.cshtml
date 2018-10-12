@@ -5,12 +5,9 @@
 }
 
 <div class="row" style="padding-top:5px">
-    <div class="col-xs-12">
-        <button type="button" class="btn btn-link btn-lg" onclick="history.go(-1)">
-            Back
-        </button>
-    </div>
+    @Html.ActionLink("Back To List", "Route", new { mainReturn = ViewBag.mainReturn }, htmlAttributes: new { @class = "btn btn-primary btn-lg" })
 </div>
+
 
 <div class="row">
     <div class="col-xs-12"></div>
@@ -171,7 +168,7 @@
 <!--<div class="row">
     <div class="col-xs-12">
         @using (Html.BeginForm("Calculate", "FileOpen", new { mainReturn = ViewBag.OpenReturn }))
-        {            
+        {
             @Html.HiddenFor(vm => vm.Rec.RecordID)
             <div class="panel panel-primary" id="calc">
                 <div class="panel-heading">
@@ -583,7 +580,7 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        
+
                                                     </div>
                                                 </div>
                                                 <dl class="dl-horizontal">
@@ -594,7 +591,7 @@
                                                     <dt>Award Year</dt>
                                                     <dd>
                                                         <div class="btn-group btn-group-toggle btn-group-sm btn-group-justified" data-toggle="buttons">
-                                                            
+
                                                         </div>
                                                     </dd>
 
@@ -787,13 +784,12 @@
 </div>
 
 <div class="row" style="padding-top:5px">
-    <button type="button" class="btn btn-link btn-lg" onclick="history.go(-1)">
-        Back
-    </button>
+    @Html.ActionLink("Back To List", "Route", new { mainReturn = ViewBag.mainReturn }, htmlAttributes: new { @class = "btn btn-primary btn-lg" })
 </div>
+
 
 <script type="text/javascript">
     $(function () {
-        $('input:checked').closest('label.btn').addClass('active');        
+        $('input:checked').closest('label.btn').addClass('active');
     });
 </script>
