@@ -30,7 +30,7 @@
                     <ul class="nav" id="side-menu">
                         <li class="sidebar-search">
                             Search Student
-                            @using (Html.BeginForm("Search", "Home"))
+                            @using (Html.BeginForm("Search", "Home", FormMethod.Get))
                             {
                                 <div class="input-group custom-search-form">
                                     <input name ="ssn" type="text" class="form-control" maxlength="11" placeholder="XXX-XX-XXXX">

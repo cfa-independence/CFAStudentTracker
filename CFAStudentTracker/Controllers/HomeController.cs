@@ -41,9 +41,16 @@ namespace CFAStudentTracker.Controllers
 
             return View();
         }
+
+        [HttpGet]
+        public ActionResult Search(string SSN)
+        {
+            return Search(SSN, null);
+        }
+       
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Search(string SSN)
+        public ActionResult Search(string SSN, int? dummy)
         {
             
             if (SSN == null)
