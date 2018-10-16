@@ -74,7 +74,7 @@ namespace CFAStudentTracker.Controllers
             var order = db.Queue.Find(i);
             if (order.QueueOrderID == 3)
             {
-                return View(vm.OrderBy(p => p.p.Record.DOD));
+                return View(vm.OrderBy(p => p.p.Record.DOD).ThenBy(p => p.p.ProcID));
             }
             return View(vm.OrderBy(p=>p.p.ProcID));
         }

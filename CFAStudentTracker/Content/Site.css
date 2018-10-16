@@ -22,3 +22,7 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.panel-heading[data-toggle] {
+    cursor: pointer !important;
+}

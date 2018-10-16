@@ -19,6 +19,32 @@ namespace CFAStudentTracker.Controllers
         private CFAEntities db = new CFAEntities();
         private MembershipEntities dbUser = new MembershipEntities();
 
+        private Dictionary<int, decimal> SubAmounts = new Dictionary<int, decimal>()
+            {
+                { 0, 0 },
+                { 1, 3500 },
+                { 2, 4500 },
+                { 3, 5500 },
+                { 6, 0 }
+            };
+
+        private Dictionary<int, decimal> IndependentUnsubAmounts = new Dictionary<int, decimal>()
+            {
+                { 0, 0 },
+                { 1, 6000 },
+                { 2, 6000 },
+                { 3, 7000 },
+                { 6, 20500 }
+            };
+
+        private Dictionary<string, double> SulaTermMultipliers = new Dictionary<string, double>()
+            {
+                { "full-time", 1 },
+                { "three-quarter-time", 0.75 },
+                { "half-time", 0.5 },
+                { "less-than-half-time", 0.25 }
+            };
+
         private ProcessingDetail GetProcessingDetail(long id)
         {
             ViewBag.id = id;
@@ -76,15 +102,13 @@ namespace CFAStudentTracker.Controllers
             record.NumMonthsInAY = detail.Rec.NumMonthsInAY;
 
             db.Entry(record).State = EntityState.Modified;
-            db.SaveChanges();
-
+            db.SaveChanges();            
 
             return Redirect(mainReturn);
         }
 
         public ActionResult OpenFile(long id, string mainReturn)
-        {
-
+        {            
             if (String.IsNullOrEmpty(mainReturn))
             {
                 ViewBag.mainReturn = Request.UrlReferrer;
@@ -119,9 +143,195 @@ namespace CFAStudentTracker.Controllers
             ViewBag.OpenReturn = Url.Action("OpenAdmin", "FileOpen", new { id, mainReturn = ViewBag.mainReturn });
             ProcessingDetail re = GetProcessingDetail(id);
 
+            CalculateViewBags(re);
             return View(re);
         }
         #region ProcessingFile
+
+        private void CalculateViewBags(ProcessingDetail processingDetail)
+        {
+            Record record = processingDetail.Rec;
+
+            // Set Defaults (perhaps a DB table for this?)
+            decimal StartingSub;
+            decimal StartingUnsub = 2000;
+            decimal AvailableAggSub = 23000;
+            decimal AvailableAggCombine = 31000;
+            int AcademicYear = Convert.ToInt32(record.AcademicYear);
+
+            StartingSub = record.DependencyStatus == "DependentNoParentInfo" ? 0 : SubAmounts[AcademicYear];
+            if (record.DependencyStatus == "Independent" || record.DependencyStatus == "DependentOverride")
+            {
+                StartingUnsub = IndependentUnsubAmounts[AcademicYear];
+                AvailableAggCombine = 57500;
+            }
+            else if (AcademicYear == 6)
+            {
+                StartingUnsub = 20500;
+                AvailableAggCombine = 138500;
+            }
+
+            decimal SulaSub = 0;
+            decimal SulaUnsub = StartingSub + StartingUnsub;
+
+            switch (SulaCalc(record, StartingSub, StartingUnsub))
+            {
+                case "ALL":
+                    SulaSub = StartingSub;
+                    SulaUnsub = StartingUnsub;
+                    break;
+                case "HALF":
+                    SulaSub = StartingSub / 2;
+                    SulaUnsub = StartingUnsub / 2;
+                    break;
+                default:
+                    break;
+            }
+
+            decimal ProratedSub = StartingSub;
+            decimal ProratedUnsub = StartingUnsub;
+            decimal ProrateSulaSub = ProratedSub;
+            decimal ProrateSulaUnsub = ProratedUnsub;
+
+            if (record.IsProratedLoan)
+            {
+                decimal NumCredits = Convert.ToDecimal(record.NumCredits);
+                ProratedSub = NumCredits / 36 * StartingSub;
+                ProratedUnsub = NumCredits / 36 * StartingUnsub;
+
+                ProrateSulaSub = (SulaSub < ProratedSub) ? SulaSub : ProratedSub;
+                ProrateSulaUnsub = (SulaUnsub < ProratedUnsub) ? SulaUnsub : ProratedUnsub;
+            }
+
+            decimal RemainingAggSub = 23000;
+            decimal RemainingAggUnsub = 31000;            
+
+            if (AcademicYear == 6)
+            {
+                RemainingAggSub = 65500;
+            }
+            else if (record.DependencyStatus != null && (record.DependencyStatus == "Independent" || record.DependencyStatus == "DependentOverride"))
+            {
+                RemainingAggUnsub = 57500;
+            }
+            RemainingAggSub = RemainingAggSub - Convert.ToDecimal(record.SubAmountUsed);
+            RemainingAggUnsub = RemainingAggUnsub - Convert.ToDecimal(record.UnsubAmountUsed);
+
+            decimal AggReallocSub;
+            decimal AggReallocUnsub;
+            decimal AggReallocSubCombine;
+            decimal AggReallocUnsubCombine;
+
+            AggReallocUnsub = AggReallocSub = RemainingAggUnsub < 0 ? 0 : Math.Max(ProrateSulaSub, RemainingAggSub);
+            AggReallocSubCombine = AggReallocSub == RemainingAggSub ? ProrateSulaUnsub + (ProrateSulaSub - RemainingAggSub) : ProrateSulaUnsub;
+            AggReallocUnsubCombine = Math.Max(AggReallocSubCombine, RemainingAggUnsub - AggReallocUnsub);
+
+            decimal ExistingLoanRemaining = AggReallocUnsub - Convert.ToDecimal(record.SubAmountUsed);
+            decimal ExistingLoanRemainingCombine = AggReallocUnsubCombine - Convert.ToDecimal(record.UnsubAmountUsed);
+
+            decimal ExistingReallocSub = Math.Min(ExistingLoanRemaining, AggReallocUnsub);
+            decimal ExistingReallocSubCombine = Math.Min(ExistingLoanRemainingCombine, AggReallocUnsubCombine);
+            decimal ExistingReallocUnsub = ExistingReallocSub;
+            decimal ExistingReallocUnsubCombine;
+
+            if (AggReallocUnsub - ExistingReallocSub > 0 && ExistingLoanRemainingCombine - ExistingReallocSubCombine > 0)
+            {
+                if (AggReallocUnsub - ExistingReallocSub + ExistingReallocSubCombine > ExistingLoanRemainingCombine)
+                {
+                    ExistingReallocUnsubCombine = ExistingLoanRemainingCombine;
+                }
+                else
+                {
+                    ExistingReallocUnsubCombine = AggReallocUnsub - ExistingReallocSub + ExistingReallocSubCombine;
+                }
+            }
+            else
+            {
+                ExistingReallocUnsubCombine = ExistingReallocSubCombine;
+            }
+
+            decimal FinalSub = Math.Max(ExistingReallocUnsub, 0);
+            decimal FinalUnsub = Math.Max(ExistingReallocUnsubCombine, 0);
+
+            ViewBag.FinalMaxSub = String.Format("{0:C2}", FinalSub);
+            ViewBag.FinalMaxUnsub = String.Format("{0:C2}", FinalUnsub);
+
+            if (record.SubAmountUsed != null)
+            {
+                ViewBag.MaxRemainingSub = String.Format("{0:C2}", Math.Floor(StartingSub - (decimal)record.SubAmountUsed));
+            }
+
+            if (record.UnsubAmountUsed != null)
+            {
+            ViewBag.MaxRemainingUnsub   = String.Format("{0:C2}", Math.Floor(StartingUnsub - (decimal)record.UnsubAmountUsed));                
+            }            
+
+            if (record.SubAggLimit != null)
+            {
+                ViewBag.AvailableAggSub = String.Format("{0:C2}", Math.Floor(AvailableAggSub - (decimal)record.SubAggLimit));
+            }
+
+            if (record.CombinedAggLimit != null)
+            {
+                ViewBag.AvailableAggCombine = String.Format("{0:C2}", Math.Floor(AvailableAggCombine - (decimal)record.CombinedAggLimit));
+            }
+
+            if (record.ExistingAYEndsBeforeTermTwo != null)
+            {
+                ViewBag.LoanPeriod = (bool)record.ExistingAYEndsBeforeTermTwo ? "8 Month" : "4 Month";
+            }
+
+            if (record.NumAcademicYearsInProgram != null)
+            {
+                ViewBag.UsagePeriod = record.NumAcademicYearsInProgram * 1.5;
+            }
+
+            if (record.SumUsagePeriods != null)
+            {
+                ViewBag.RemainingUsagePeriod = ViewBag.UsagePeriod - record.SumUsagePeriods;                
+            }
+
+            ViewBag.MaxProrateSub       = String.Format("{0:C2}", Math.Floor(ProratedSub));
+            ViewBag.MaxProrateUnsub     = String.Format("{0:C2}", Math.Floor(ProratedUnsub));
+            ViewBag.StartingSub         = String.Format("{0:C2}", Math.Floor(StartingSub));
+            ViewBag.StartingUnsub       = String.Format("{0:C2}", Math.Floor(StartingUnsub));
+
+        }
+
+        public string SulaCalc(Record record, decimal StartingSub, decimal StartingUnsub)
+        {
+            string SulaResult = String.Empty;
+
+            if (StartingSub == 0)
+                return "ALL";
+
+            double Term1Usage = record.AttendanceTermOne != null ? SulaTermMultipliers[record.AttendanceTermOne] / 2 : 0;
+            double Term2Usage = record.AttendanceTermTwo != null ? SulaTermMultipliers[record.AttendanceTermTwo] / 2 : 0;
+            double RemainingUsage;
+
+            if (record.SumUsagePeriods == null)
+            {
+                RemainingUsage = 9999;
+            }
+            else
+            {
+                RemainingUsage = Convert.ToDouble(record.NumAcademicYearsInProgram) * 1.5 - Convert.ToDouble(record.SumUsagePeriods);
+            }
+
+            if (Term1Usage + Term2Usage <= RemainingUsage)
+            {
+                return "ALL";
+            }
+            else if (Term2Usage <= Term1Usage)
+            {
+                return "HALF";
+            }
+            else
+            {
+                return "NONE";
+            }            
+        }
+
         public async Task<ActionResult> CompleteFile(string pID, string qID, string mainReturn)
         {
             var queueID = short.Parse(qID);

@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿
+using System.Web;
 using System.Web.Optimization;
 
 namespace CFAStudentTracker
@@ -32,7 +33,7 @@ namespace CFAStudentTracker
                       "~/Content/bootstrap.css",
                       "~/Content/metisMenu.css",
                       "~/Content/font-awesome.css",
-                      "~/Content/site.css",
+                      "~/Content/Site.css",
                       "~/Content/sb-admin-2.css"));
         }
     }
