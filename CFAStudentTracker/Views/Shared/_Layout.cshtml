@@ -33,7 +33,7 @@
                             @using (Html.BeginForm("Search", "Home", FormMethod.Get))
                             {
                                 <div class="input-group custom-search-form">
-                                    <input name ="ssn" type="text" class="form-control" maxlength="11" placeholder="XXX-XX-XXXX">
+                                    <input name ="ssn" id="ssn" type="text" class="form-control" maxlength="11" placeholder="XXX-XX-XXXX" autofocus>
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="submit">
                                             <i class="fa fa-search"></i>
@@ -134,5 +134,23 @@
                        
                        @Scripts.Render("~/bundles/bootstrap")
                        @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+        $('#ssn').keyup(function () {
+            var val = this.value.replace(/\D/g, '');
+            var newVal = '';
+            var sizes = [3, 2, 4];
+
+            for (var i in sizes) {
+                if (val.length > sizes[i]) {
+                    newVal += val.substr(0, sizes[i]) + '-';
+                    val = val.substr(sizes[i]);
+                }
+                else break;
+            }
+
+            newVal += val;
+            this.value = newVal;
+        });
+    </script>
 </body>
 </html>

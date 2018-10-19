@@ -29,8 +29,8 @@ namespace CFAStudentTracker.Models
         public int FileID { get; set; }
         public string DependencyStatus { get; set; }
         public Nullable<byte> AcademicYear { get; set; }
-        public Nullable<decimal> SubAggLimit { get; set; }
-        public Nullable<decimal> CombinedAggLimit { get; set; }
+        public Nullable<decimal> SubAgg { get; set; }
+        public Nullable<decimal> CombinedAgg { get; set; }
         public bool IsProratedLoan { get; set; }
         public Nullable<byte> NumCredits { get; set; }
         public Nullable<bool> ExistingAYEndsBeforeTermTwo { get; set; }

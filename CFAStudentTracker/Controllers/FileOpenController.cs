@@ -19,6 +19,173 @@ namespace CFAStudentTracker.Controllers
         private CFAEntities db = new CFAEntities();
         private MembershipEntities dbUser = new MembershipEntities();
 
+        private string DecimalAmountFormat = "{0:C2}";
+        private string DecimalPercentFormat = "{0:#.0000}%";
+
+        private struct CLE
+        {
+            public CLE(decimal r, decimal t, decimal p)
+            {
+                Room = r;
+                Travel = t;
+                Personal = p;
+            }
+
+            public decimal Room;
+            public decimal Travel;
+            public decimal Personal;
+        };
+
+        private struct PellAmounts
+        {
+            public PellAmounts(decimal ft, decimal tqt, decimal ht, decimal bht)
+            {
+                FullTime = ft;
+                ThreeQuarterTime = tqt;
+                HalfTime = ht;
+                BelowHalfTime = bht;
+            }
+
+            public decimal FullTime;
+            public decimal ThreeQuarterTime;
+            public decimal HalfTime;
+            public decimal BelowHalfTime;
+        };
+
+        private Dictionary<Func<decimal, bool>, PellAmounts> PellByEFC = new Dictionary<Func<decimal, bool>, PellAmounts>()
+        {
+            { value => value == 0, new PellAmounts(6095, 4571, 3048, 1524) },
+            { value => value >= 1 && value <= 100, new PellAmounts(6045, 4534, 3023, 1511) },
+            { value => value >= 101 && value <= 200, new PellAmounts(5945, 4459, 2973, 1486) },
+            { value => value >= 201 && value <= 300, new PellAmounts(5845, 4384, 2923, 1461) },
+            { value => value >= 301 && value <= 400, new PellAmounts(5745, 4309, 2873, 1436) },
+            { value => value >= 401 && value <= 500, new PellAmounts(5645, 4234, 2823, 1411) },
+            { value => value >= 501 && value <= 600, new PellAmounts(5545, 4159, 2773, 1386) },
+            { value => value >= 601 && value <= 700, new PellAmounts(5445, 4084, 2723, 1361) },
+            { value => value >= 701 && value <= 800, new PellAmounts(5345, 4009, 2673, 1336) },
+            { value => value >= 801 && value <= 900, new PellAmounts(5245, 3934, 2623, 1311) },
+            { value => value >= 901 && value <= 1000, new PellAmounts(5145, 3859, 2573, 1286) },
+            { value => value >= 1001 && value <= 1100, new PellAmounts(5045, 3784, 2523, 1261) },
+            { value => value >= 1101 && value <= 1200, new PellAmounts(4945, 3709, 2473, 1236) },
+            { value => value >= 1201 && value <= 1300, new PellAmounts(4845, 3634, 2423, 1211) },
+            { value => value >= 1301 && value <= 1400, new PellAmounts(4745, 3559, 2373, 1186) },
+            { value => value >= 1401 && value <= 1500, new PellAmounts(4645, 3484, 2323, 1161) },
+            { value => value >= 1501 && value <= 1600, new PellAmounts(4545, 3409, 2273, 1136) },
+            { value => value >= 1601 && value <= 1700, new PellAmounts(4445, 3334, 2223, 1111) },
+            { value => value >= 1701 && value <= 1800, new PellAmounts(4345, 3259, 2173, 1086) },
+            { value => value >= 1801 && value <= 1900, new PellAmounts(4245, 3184, 2123, 1061) },
+            { value => value >= 1901 && value <= 2000, new PellAmounts(4145, 3109, 2073, 1036) },
+            { value => value >= 2001 && value <= 2100, new PellAmounts(4045, 3034, 2023, 1011) },
+            { value => value >= 2101 && value <= 2200, new PellAmounts(3945, 2959, 1973, 986) },
+            { value => value >= 2201 && value <= 2300, new PellAmounts(3845, 2884, 1923, 961) },
+            { value => value >= 2301 && value <= 2400, new PellAmounts(3745, 2809, 1873, 936) },
+            { value => value >= 2401 && value <= 2500, new PellAmounts(3645, 2734, 1823, 911) },
+            { value => value >= 2501 && value <= 2600, new PellAmounts(3545, 2659, 1773, 886) },
+            { value => value >= 2601 && value <= 2700, new PellAmounts(3445, 2584, 1723, 861) },
+            { value => value >= 2701 && value <= 2800, new PellAmounts(3345, 2509, 1673, 836) },
+            { value => value >= 2801 && value <= 2900, new PellAmounts(3245, 2434, 1623, 811) },
+            { value => value >= 2901 && value <= 3000, new PellAmounts(3145, 2359, 1573, 786) },
+            { value => value >= 3001 && value <= 3100, new PellAmounts(3045, 2284, 1523, 761) },
+            { value => value >= 3101 && value <= 3200, new PellAmounts(2945, 2209, 1473, 736) },
+            { value => value >= 3201 && value <= 3300, new PellAmounts(2845, 2134, 1423, 711) },
+            { value => value >= 3301 && value <= 3400, new PellAmounts(2745, 2059, 1373, 686) },
+            { value => value >= 3401 && value <= 3500, new PellAmounts(2645, 1984, 1323, 661) },
+            { value => value >= 3501 && value <= 3600, new PellAmounts(2545, 1909, 1273, 636) },
+            { value => value >= 3601 && value <= 3700, new PellAmounts(2445, 1834, 1223, 611) },
+            { value => value >= 3701 && value <= 3800, new PellAmounts(2345, 1759, 1173, 0) },
+            { value => value >= 3801 && value <= 3900, new PellAmounts(2245, 1684, 1123, 0) },
+            { value => value >= 3901 && value <= 4000, new PellAmounts(2145, 1609, 1073, 0) },
+            { value => value >= 4001 && value <= 4100, new PellAmounts(2045, 1534, 1023, 0) },
+            { value => value >= 4101 && value <= 4200, new PellAmounts(1945, 1459, 973, 0) },
+            { value => value >= 4201 && value <= 4300, new PellAmounts(1845, 1384, 923, 0) },
+            { value => value >= 4301 && value <= 4400, new PellAmounts(1745, 1309, 873, 0) },
+            { value => value >= 4401 && value <= 4500, new PellAmounts(1645, 1234, 823, 0) },
+            { value => value >= 4501 && value <= 4600, new PellAmounts(1545, 1159, 773, 0) },
+            { value => value >= 4601 && value <= 4700, new PellAmounts(1445, 1084, 723, 0) },
+            { value => value >= 4701 && value <= 4800, new PellAmounts(1345, 1009, 673, 0) },
+            { value => value >= 4801 && value <= 4900, new PellAmounts(1245, 934, 623, 0) },
+            { value => value >= 4901 && value <= 5000, new PellAmounts(1145, 859, 0, 0) },
+            { value => value >= 5001 && value <= 5100, new PellAmounts(1045, 784, 0, 0) },
+            { value => value >= 5101 && value <= 5200, new PellAmounts(945, 709, 0, 0) },
+            { value => value >= 5201 && value <= 5300, new PellAmounts(845, 634, 0, 0) },
+            { value => value >= 5301 && value <= 5400, new PellAmounts(745, 0, 0, 0) },
+            { value => value >= 5401 && value <= 5486, new PellAmounts(652, 0, 0, 0) },
+            { value => value >= 5487, new PellAmounts(0, 0, 0, 0) },
+
+
+        };
+
+        private Dictionary<string, int> RegionForState = new Dictionary<string, int>()
+        {
+            { "AK", 1 }, { "AL", 7 }, { "AR", 5 }, { "AZ", 1 }, { "CA", 3 },
+            { "CO", 1 }, { "CT", 4 }, { "DC", 8 }, { "DE", 6 }, { "FL", 7 },
+            { "GA", 7 }, { "HI", 3 }, { "IA", 2 }, { "ID", 1 }, { "IL", 2 },
+            { "IN", 2 }, { "KS", 2 }, { "KY", 7 }, { "LA", 7 }, { "MA", 4 },
+            { "MD", 8 }, { "ME", 4 }, { "MI", 2 }, { "MN", 2 }, { "MO", 2 },
+            { "MS", 7 }, { "MT", 1 }, { "NC", 7 }, { "ND", 2 }, { "NE", 2 },
+            { "NH", 4 }, { "NJ", 6 }, { "NM", 5 }, { "NV", 1 }, { "NY", 6 },
+            { "OH", 2 }, { "OK", 5 }, { "OR", 4 }, { "PA", 2 }, { "PR", 6 },
+            { "RI", 4 }, { "SC", 7 }, { "SD", 2 }, { "TN", 7 }, { "TX", 5 },
+            { "UT", 1 }, { "VA", 8 }, { "VI", 7 }, { "VT", 4 }, { "WA", 4 },
+            { "WI", 2 }, { "WV", 8 }, { "WY", 1 }
+        };
+
+        private Dictionary<int, CLE> WithParentsCLE1718 = new Dictionary<int, CLE>()
+        {
+            { 1, new CLE(731, 243, 379) },
+            { 2, new CLE(715, 238, 371) },
+            { 3, new CLE(770, 257, 399) },
+            { 4, new CLE(751, 250, 390) },
+            { 5, new CLE(730, 243, 381) },
+            { 6, new CLE(766, 256, 397) },
+            { 7, new CLE(722, 240, 375) },
+            { 8, new CLE(837, 279, 434) },
+        };
+
+        private Dictionary<int, CLE> OffCampusCLE1718 = new Dictionary<int, CLE>()
+        {
+            { 1, new CLE(1090, 364, 566) },
+            { 2, new CLE(1067, 357, 553) },
+            { 3, new CLE(1148, 385, 601) },
+            { 4, new CLE(1121, 373, 582) },
+            { 5, new CLE(1090, 363, 565) },
+            { 6, new CLE(1143, 381, 593) },
+            { 7, new CLE(1079, 360, 560) },
+            { 8, new CLE(1249, 416, 648) }
+        };
+
+        private Dictionary<int, CLE> WithParentsCLE1819 = new Dictionary<int, CLE>()
+        {
+            { 1, new CLE(778, 265, 425) },
+            { 2, new CLE(809, 275, 443) },
+            { 3, new CLE(809, 410, 661) },
+            { 4, new CLE(761, 259, 416) },
+            { 5, new CLE(765, 260, 625) },
+            { 6, new CLE(787, 267, 431) },
+            { 7, new CLE(750, 255, 410) },
+            { 8, new CLE(824, 280, 451) }
+        };
+
+        private Dictionary<int, CLE> OffCampusCLE1819 = new Dictionary<int, CLE>()
+        {
+            { 1, new CLE(1162, 395, 636) },
+            { 2, new CLE(1208, 410, 661) },
+            { 3, new CLE(1208, 410, 661) },
+            { 4, new CLE(1136, 386, 622) },
+            { 5, new CLE(1142, 388, 625) },
+            { 6, new CLE(1175, 399, 643) },
+            { 7, new CLE(1120, 380, 613) },
+            { 8, new CLE(1230, 418, 673) }
+        };
+
+        private Dictionary<string, decimal> PellByAY = new Dictionary<string, decimal>()
+        {
+            { "", 0 },
+            { "'17-'18", 0 },
+            { "'18-'19", 6095 },
+            { "'19-'20", 0 }
+        };
+
         private Dictionary<int, decimal> SubAmounts = new Dictionary<int, decimal>()
             {
                 { 0, 0 },
@@ -28,7 +195,7 @@ namespace CFAStudentTracker.Controllers
                 { 6, 0 }
             };
 
-        private Dictionary<int, decimal> IndependentUnsubAmounts = new Dictionary<int, decimal>()
+        private Dictionary<int, decimal> UnsubAmounts = new Dictionary<int, decimal>()
             {
                 { 0, 0 },
                 { 1, 6000 },
@@ -37,12 +204,13 @@ namespace CFAStudentTracker.Controllers
                 { 6, 20500 }
             };
 
-        private Dictionary<string, double> SulaTermMultipliers = new Dictionary<string, double>()
+        private Dictionary<string, double> TermMultipliers = new Dictionary<string, double>()
             {
+                { "", 0 },
                 { "full-time", 1 },
                 { "three-quarter-time", 0.75 },
                 { "half-time", 0.5 },
-                { "less-than-half-time", 0.25 }
+                { "below-half-time", 0.25 }
             };
 
         private ProcessingDetail GetProcessingDetail(long id)
@@ -67,6 +235,11 @@ namespace CFAStudentTracker.Controllers
             re.PreviousProcessed = q;
             re.ProcErrors = db.ProcessingError.Include(p => p.ErrorType).Include(p => p.ErrorComplete).Where(p => p.ProcID == id);
 
+            DirectLoanCalc(re);
+            PellCalc(re);
+            BudgetCalc(re);
+            ViewBag.FinalLoanPeriod = (re.Rec.IsProratedLoan || ViewBag.SulaLoanPeriod == "4 Month" || ViewBag.ExistingLoanPeriod == "4 Month") ? "4 Month" : "8 Month";
+
             return re;
         }
 
@@ -75,8 +248,8 @@ namespace CFAStudentTracker.Controllers
             Record record = db.Record.Find(detail.Rec.RecordID);
             record.DependencyStatus = detail.Rec.DependencyStatus;
             record.AcademicYear = detail.Rec.AcademicYear;
-            record.SubAggLimit = detail.Rec.SubAggLimit;
-            record.CombinedAggLimit = detail.Rec.CombinedAggLimit;
+            record.SubAgg = detail.Rec.SubAgg;
+            record.CombinedAgg = detail.Rec.CombinedAgg;
             record.IsProratedLoan = detail.Rec.IsProratedLoan;
             record.NumCredits = detail.Rec.NumCredits;
             record.ExistingAYEndsBeforeTermTwo = detail.Rec.ExistingAYEndsBeforeTermTwo;
@@ -142,160 +315,227 @@ namespace CFAStudentTracker.Controllers
             }
             ViewBag.OpenReturn = Url.Action("OpenAdmin", "FileOpen", new { id, mainReturn = ViewBag.mainReturn });
             ProcessingDetail re = GetProcessingDetail(id);
-
-            CalculateViewBags(re);
+            
             return View(re);
         }
         #region ProcessingFile
 
-        private void CalculateViewBags(ProcessingDetail processingDetail)
+        private void DirectLoanCalc(ProcessingDetail processingDetail)
         {
             Record record = processingDetail.Rec;
-
-            // Set Defaults (perhaps a DB table for this?)
-            decimal StartingSub;
-            decimal StartingUnsub = 2000;
-            decimal AvailableAggSub = 23000;
-            decimal AvailableAggCombine = 31000;
             int AcademicYear = Convert.ToInt32(record.AcademicYear);
+            decimal NumCredits = Convert.ToDecimal(record.NumCredits);
+            decimal SubAgg = Convert.ToDecimal(record.SubAgg);
+            decimal CombineAgg = Convert.ToDecimal(record.CombinedAgg);
+            decimal SubUsed = Convert.ToDecimal(record.SubAmountUsed);
+            decimal UnsubUsed = Convert.ToDecimal(record.UnsubAmountUsed);
 
-            StartingSub = record.DependencyStatus == "DependentNoParentInfo" ? 0 : SubAmounts[AcademicYear];
+            decimal StartingAYFunding1 = (record.DependencyStatus == "DependentNoParentInfo") ? 0 : SubAmounts[AcademicYear];
+            decimal StartingAYFunding2 = 2000;
             if (record.DependencyStatus == "Independent" || record.DependencyStatus == "DependentOverride")
             {
-                StartingUnsub = IndependentUnsubAmounts[AcademicYear];
-                AvailableAggCombine = 57500;
+                StartingAYFunding2 = UnsubAmounts[AcademicYear];
             }
             else if (AcademicYear == 6)
             {
-                StartingUnsub = 20500;
-                AvailableAggCombine = 138500;
+                StartingAYFunding2 = 20500;
             }
 
-            decimal SulaSub = 0;
-            decimal SulaUnsub = StartingSub + StartingUnsub;
+            decimal ProratedAmount1 = (record.IsProratedLoan) ? Math.Round(NumCredits / 36 * StartingAYFunding1) : StartingAYFunding1;
+            decimal ProratedAmount2 = (record.IsProratedLoan) ? Math.Round(NumCredits / 36 * StartingAYFunding2) : StartingAYFunding2;
 
-            switch (SulaCalc(record, StartingSub, StartingUnsub))
+            decimal SulaAdjustment1;
+            decimal SulaAdjustment2;
+            string SulaLoanPeriod = "8 Month";
+            switch(SulaCalc(record, StartingAYFunding1, StartingAYFunding2))
             {
                 case "ALL":
-                    SulaSub = StartingSub;
-                    SulaUnsub = StartingUnsub;
+                    SulaAdjustment1 = StartingAYFunding1;
+                    SulaAdjustment2 = StartingAYFunding2;
                     break;
                 case "HALF":
-                    SulaSub = StartingSub / 2;
-                    SulaUnsub = StartingUnsub / 2;
+                    SulaAdjustment1 = StartingAYFunding1 / 2;
+                    SulaAdjustment2 = StartingAYFunding2 / 2;
+                    SulaLoanPeriod = "4 Month";
                     break;
                 default:
+                    SulaAdjustment1 = 0;
+                    SulaAdjustment2 = StartingAYFunding1 = StartingAYFunding2;
                     break;
             }
 
-            decimal ProratedSub = StartingSub;
-            decimal ProratedUnsub = StartingUnsub;
-            decimal ProrateSulaSub = ProratedSub;
-            decimal ProrateSulaUnsub = ProratedUnsub;
+            decimal ProrateSulaSwitch1 = (record.IsProratedLoan) ? Math.Min(ProratedAmount1, SulaAdjustment1) : SulaAdjustment1;
+            decimal ProrateSulaSwitch2 = (record.IsProratedLoan) ? Math.Min(ProratedAmount2, SulaAdjustment2) : SulaAdjustment2;
 
-            if (record.IsProratedLoan)
+            decimal RemainingAgg1 = ((AcademicYear == 6) ? 65500 : (record.DependencyStatus == "Independent" || record.DependencyStatus == "DependentOverride") ? 23000 : 23000) - SubAgg;
+            decimal RemainingAgg2 = ((AcademicYear == 6) ? 138500 : (record.DependencyStatus == "Independent" || record.DependencyStatus == "DependentOverride") ? 57500 : 31000) - CombineAgg;
+
+            decimal SubAggRealloc1 = (RemainingAgg2 < 0) ? 0 : Math.Min(ProrateSulaSwitch1, RemainingAgg1);
+            decimal SubAggRealloc2 = (SubAggRealloc1 == RemainingAgg1) ? ProrateSulaSwitch2 + (ProrateSulaSwitch1 - RemainingAgg1) : ProrateSulaSwitch2;
+
+            decimal UnsubAggRealloc1 = SubAggRealloc1;
+            decimal UnsubAggRealloc2 = Math.Min(SubAggRealloc2, RemainingAgg2 - UnsubAggRealloc1);
+
+            decimal ExistingLoanRemaining1 = UnsubAggRealloc1 - SubUsed;
+            decimal ExistingLoanRemaining2 = UnsubAggRealloc2 - UnsubUsed;
+
+            decimal SubExistingRealloc1 = Math.Min(ExistingLoanRemaining1, UnsubAggRealloc1);
+            decimal SubExistingRealloc2 = Math.Min(ExistingLoanRemaining2, UnsubAggRealloc2);
+
+            decimal UnsubExistingRealloc1 = SubExistingRealloc1;
+            decimal UnsubExistingRealloc2;
+            if (UnsubAggRealloc1 - SubExistingRealloc2 > 0 && ExistingLoanRemaining2 - SubExistingRealloc2 > 0)
             {
-                decimal NumCredits = Convert.ToDecimal(record.NumCredits);
-                ProratedSub = NumCredits / 36 * StartingSub;
-                ProratedUnsub = NumCredits / 36 * StartingUnsub;
-
-                ProrateSulaSub = (SulaSub < ProratedSub) ? SulaSub : ProratedSub;
-                ProrateSulaUnsub = (SulaUnsub < ProratedUnsub) ? SulaUnsub : ProratedUnsub;
-            }
-
-            decimal RemainingAggSub = 23000;
-            decimal RemainingAggUnsub = 31000;            
-
-            if (AcademicYear == 6)
-            {
-                RemainingAggSub = 65500;
-            }
-            else if (record.DependencyStatus != null && (record.DependencyStatus == "Independent" || record.DependencyStatus == "DependentOverride"))
-            {
-                RemainingAggUnsub = 57500;
-            }
-            RemainingAggSub = RemainingAggSub - Convert.ToDecimal(record.SubAmountUsed);
-            RemainingAggUnsub = RemainingAggUnsub - Convert.ToDecimal(record.UnsubAmountUsed);
-
-            decimal AggReallocSub;
-            decimal AggReallocUnsub;
-            decimal AggReallocSubCombine;
-            decimal AggReallocUnsubCombine;
-
-            AggReallocUnsub = AggReallocSub = RemainingAggUnsub < 0 ? 0 : Math.Max(ProrateSulaSub, RemainingAggSub);
-            AggReallocSubCombine = AggReallocSub == RemainingAggSub ? ProrateSulaUnsub + (ProrateSulaSub - RemainingAggSub) : ProrateSulaUnsub;
-            AggReallocUnsubCombine = Math.Max(AggReallocSubCombine, RemainingAggUnsub - AggReallocUnsub);
-
-            decimal ExistingLoanRemaining = AggReallocUnsub - Convert.ToDecimal(record.SubAmountUsed);
-            decimal ExistingLoanRemainingCombine = AggReallocUnsubCombine - Convert.ToDecimal(record.UnsubAmountUsed);
-
-            decimal ExistingReallocSub = Math.Min(ExistingLoanRemaining, AggReallocUnsub);
-            decimal ExistingReallocSubCombine = Math.Min(ExistingLoanRemainingCombine, AggReallocUnsubCombine);
-            decimal ExistingReallocUnsub = ExistingReallocSub;
-            decimal ExistingReallocUnsubCombine;
-
-            if (AggReallocUnsub - ExistingReallocSub > 0 && ExistingLoanRemainingCombine - ExistingReallocSubCombine > 0)
-            {
-                if (AggReallocUnsub - ExistingReallocSub + ExistingReallocSubCombine > ExistingLoanRemainingCombine)
-                {
-                    ExistingReallocUnsubCombine = ExistingLoanRemainingCombine;
-                }
-                else
-                {
-                    ExistingReallocUnsubCombine = AggReallocUnsub - ExistingReallocSub + ExistingReallocSubCombine;
-                }
+                UnsubExistingRealloc2 = Math.Min(ExistingLoanRemaining2, UnsubAggRealloc1 - SubExistingRealloc1 + SubExistingRealloc2);
             }
             else
             {
-                ExistingReallocUnsubCombine = ExistingReallocSubCombine;
+                UnsubExistingRealloc2 = SubExistingRealloc2;
             }
 
-            decimal FinalSub = Math.Max(ExistingReallocUnsub, 0);
-            decimal FinalUnsub = Math.Max(ExistingReallocUnsubCombine, 0);
+            decimal FinalResult1 = Math.Max(0, UnsubExistingRealloc1);
+            decimal FinalResult2 = Math.Max(0, UnsubExistingRealloc2);
 
-            ViewBag.FinalMaxSub = String.Format("{0:C2}", FinalSub);
-            ViewBag.FinalMaxUnsub = String.Format("{0:C2}", FinalUnsub);
+            decimal StartingSub = StartingAYFunding1;
+            decimal StartingUnsub = StartingAYFunding2;            
 
-            if (record.SubAmountUsed != null)
+            // Now assign to the appropriate view variables
+            ViewBag.StartingSub = String.Format(DecimalAmountFormat, StartingAYFunding1);
+            ViewBag.StartingUnsub = String.Format(DecimalAmountFormat, StartingAYFunding2);
+            ViewBag.AvailableAggSub = String.Format(DecimalAmountFormat, RemainingAgg1);
+            ViewBag.AvailableAggCombine = String.Format(DecimalAmountFormat, RemainingAgg2);
+            ViewBag.MaxProrateSub = String.Format(DecimalAmountFormat, ProratedAmount1);
+            ViewBag.MaxProrateUnsub = String.Format(DecimalAmountFormat, ProratedAmount2);
+            ViewBag.MaxRemainingSub = String.Format(DecimalAmountFormat, StartingSub - SubUsed);
+            ViewBag.MaxRemainingUnsub = String.Format(DecimalAmountFormat, StartingUnsub - UnsubUsed);
+            ViewBag.MaxSulaSub = String.Format(DecimalAmountFormat, SulaAdjustment1);
+            ViewBag.MaxSulaUnsub = String.Format(DecimalAmountFormat, SulaAdjustment2);
+            ViewBag.ExistingLoanPeriod = (record.ExistingAYEndsBeforeTermTwo == true) ? "4 Month" : "8 Month";
+            ViewBag.SulaLoanPeriod = SulaLoanPeriod;
+            ViewBag.FinalMaxSub = String.Format(DecimalAmountFormat, FinalResult1);
+            ViewBag.FinalMaxUnsub = String.Format(DecimalAmountFormat, FinalResult2);
+        }
+
+        // TODO: Fix Pell Amount based on EFC range
+        private void PellCalc(ProcessingDetail processingDetail)
+        {
+            Record record = processingDetail.Rec;
+            decimal LEU = Convert.ToDecimal(record.LEU);
+            decimal PercentPellUsed = Convert.ToDecimal(record.PercentPellUsed) / 100;
+            decimal EFC = Convert.ToDecimal(record.EFC);
+            int AcademicYear = Convert.ToInt32(record.AcademicYear);
+
+            var key = PellByEFC.Keys.Single(efc => efc(EFC));
+            var Pell = PellByEFC[key];
+            decimal MaxPellAY;
+
+            switch(record.StatusTermOne)
             {
-                ViewBag.MaxRemainingSub = String.Format("{0:C2}", Math.Floor(StartingSub - (decimal)record.SubAmountUsed));
+                case "full-time":
+                    MaxPellAY = Pell.FullTime;
+                    break;
+                case "three-quarter-time":
+                    MaxPellAY = Pell.ThreeQuarterTime;
+                    break;
+                case "half-time":
+                    MaxPellAY = Pell.HalfTime;
+                    break;
+                case "below-half-time":
+                    MaxPellAY = Pell.BelowHalfTime;
+                    break;
+                default:
+                    MaxPellAY = 0;
+                    break;
+            }
+            
+            decimal AdditionalPell = MaxPellAY / 2;
+            decimal RemainingLEU = (6 - (LEU / 100)) * 100;
+            decimal MaxPellLEU = (RemainingLEU < (decimal)1.5) ? MaxPellAY * RemainingLEU : MaxPellAY;
+            decimal MaxExistingPct = (decimal)1.5 - (PercentPellUsed);
+            decimal MaxExistingPell = Math.Floor(MaxPellAY * MaxExistingPct);
+
+            decimal FinalMaxPct = Math.Min((decimal)1.5, RemainingLEU);
+            FinalMaxPct = Math.Min(FinalMaxPct, MaxExistingPct);
+
+            decimal FinalMaxAmountTotal;
+            if (record.DependencyStatus == "DependentNoParentInfo" || AcademicYear == 6)
+            {
+                FinalMaxAmountTotal = 0;
+            }
+            else
+            {
+                decimal temp = (FinalMaxPct >= 1) ? MaxPellAY : FinalMaxPct * MaxPellAY;
+                decimal temp2 = (1 - FinalMaxPct < 0) ? (1 - FinalMaxPct) * MaxPellAY * -1 : 0;
+
+                FinalMaxAmountTotal = Math.Floor(temp) + Math.Floor(temp2);
             }
 
-            if (record.UnsubAmountUsed != null)
-            {
-            ViewBag.MaxRemainingUnsub   = String.Format("{0:C2}", Math.Floor(StartingUnsub - (decimal)record.UnsubAmountUsed));                
-            }            
+            string StatusTermOne = (record.StatusTermOne != null) ? record.StatusTermOne : "";
+            string StatusTermTwo = (record.StatusTermTwo != null) ? record.StatusTermTwo : "";
+            string StatusTermThree = (record.StatusTermThree != null) ? record.StatusTermThree : "";
 
-            if (record.SubAggLimit != null)
+            decimal FinalMaxAmountTerm1 = Math.Min(FinalMaxAmountTotal, Math.Ceiling(MaxPellAY * ((decimal)TermMultipliers[StatusTermOne] / 2)));
+            decimal FinalMaxAmountTerm2 = Math.Min(FinalMaxAmountTotal - FinalMaxAmountTerm1, Math.Floor(MaxPellAY * ((decimal)TermMultipliers[StatusTermTwo] / 2)));
+            decimal FinalMaxAmountTerm3 = Math.Min(FinalMaxAmountTotal - FinalMaxAmountTerm1 - FinalMaxAmountTerm2, Math.Floor(MaxPellAY * ((decimal)TermMultipliers[StatusTermThree] / 2)));
+
+            decimal FinalMaxPctTerm1 = (MaxPellAY > 0) ? FinalMaxAmountTerm1 / MaxPellAY : 0;
+            decimal FinalMaxPctTerm2 = (MaxPellAY > 0) ? FinalMaxAmountTerm2 / MaxPellAY : 0;
+            decimal FinalMaxPctTerm3 = (MaxPellAY > 0) ? FinalMaxAmountTerm3 / MaxPellAY : 0;
+
+            // Assign to view variables
+            ViewBag.MaxPellAY = String.Format(DecimalAmountFormat, MaxPellAY);
+            ViewBag.AdditionalPell = String.Format(DecimalAmountFormat, AdditionalPell);
+            ViewBag.MaxPellLEU = String.Format(DecimalAmountFormat, MaxPellLEU);
+            ViewBag.RemainingLEU = String.Format(DecimalPercentFormat, RemainingLEU);
+            ViewBag.MaxExistingPell = String.Format(DecimalAmountFormat, MaxExistingPell);
+            ViewBag.MaxExistingPct = String.Format(DecimalPercentFormat, MaxExistingPct * 100);
+            ViewBag.FinalMaxAmount = String.Format(DecimalAmountFormat, FinalMaxAmountTotal);
+            ViewBag.FinalMaxPct = String.Format(DecimalPercentFormat, FinalMaxPct * 100);
+            ViewBag.FinalMaxAmountTerm1 = String.Format(DecimalAmountFormat, FinalMaxAmountTerm1);
+            ViewBag.FinalMaxAmountTerm2 = String.Format(DecimalAmountFormat, FinalMaxAmountTerm2);
+            ViewBag.FinalMaxAmountTerm3 = String.Format(DecimalAmountFormat, FinalMaxAmountTerm3);
+            ViewBag.FinalMaxPctTerm1 = String.Format(DecimalPercentFormat, FinalMaxPctTerm1 * 100);
+            ViewBag.FinalMaxPctTerm2 = String.Format(DecimalPercentFormat, FinalMaxPctTerm2 * 100);
+            ViewBag.FinalMaxPctTerm3 = String.Format(DecimalPercentFormat, FinalMaxPctTerm3 * 100);
+        }
+
+        // TODO: Add CLEs for '17-'18
+        private void BudgetCalc(ProcessingDetail processingDetail)
+        {
+            Record record = processingDetail.Rec;
+
+            decimal Room = 0;
+            decimal Travel = 0;
+            decimal Personal = 0;
+            decimal Tuition;
+
+            decimal NumMonthsInAY = Convert.ToDecimal(record.NumMonthsInAY);
+
+            if (!String.IsNullOrEmpty(record.StateOnISIR))
             {
-                ViewBag.AvailableAggSub = String.Format("{0:C2}", Math.Floor(AvailableAggSub - (decimal)record.SubAggLimit));
+                int region = RegionForState[record.StateOnISIR];
+
+                CLE cle;
+                if (record.AwardYear == "'17-'18")
+                    cle = (record.IsWithParents == true) ? WithParentsCLE1718[region] : OffCampusCLE1718[region];
+                else
+                    cle = (record.IsWithParents == true) ? WithParentsCLE1819[region] : OffCampusCLE1819[region];
+
+                Room = cle.Room * NumMonthsInAY;
+                Travel = (record.IsOnlineStudent == true) ? 0 : cle.Travel * NumMonthsInAY;
+                Personal = cle.Personal * NumMonthsInAY;
             }
 
-            if (record.CombinedAggLimit != null)
-            {
-                ViewBag.AvailableAggCombine = String.Format("{0:C2}", Math.Floor(AvailableAggCombine - (decimal)record.CombinedAggLimit));
-            }
+            decimal NumEstimatedCredits = Convert.ToDecimal(record.NumEstimatedCredits);
+            decimal CostPerCredit = Convert.ToDecimal(record.CostPerCredit);
 
-            if (record.ExistingAYEndsBeforeTermTwo != null)
-            {
-                ViewBag.LoanPeriod = (bool)record.ExistingAYEndsBeforeTermTwo ? "8 Month" : "4 Month";
-            }
+            Tuition = NumEstimatedCredits * CostPerCredit;
 
-            if (record.NumAcademicYearsInProgram != null)
-            {
-                ViewBag.UsagePeriod = record.NumAcademicYearsInProgram * 1.5;
-            }
-
-            if (record.SumUsagePeriods != null)
-            {
-                ViewBag.RemainingUsagePeriod = ViewBag.UsagePeriod - record.SumUsagePeriods;                
-            }
-
-            ViewBag.MaxProrateSub       = String.Format("{0:C2}", Math.Floor(ProratedSub));
-            ViewBag.MaxProrateUnsub     = String.Format("{0:C2}", Math.Floor(ProratedUnsub));
-            ViewBag.StartingSub         = String.Format("{0:C2}", Math.Floor(StartingSub));
-            ViewBag.StartingUnsub       = String.Format("{0:C2}", Math.Floor(StartingUnsub));
-
+            // Assign to view variables
+            ViewBag.Room = String.Format(DecimalAmountFormat, Room);
+            ViewBag.Travel = String.Format(DecimalAmountFormat, Travel);
+            ViewBag.Personal = String.Format(DecimalAmountFormat, Personal);
+            ViewBag.Tuition = String.Format(DecimalAmountFormat, Tuition);
         }
 
         public string SulaCalc(Record record, decimal StartingSub, decimal StartingUnsub)
@@ -305,8 +545,8 @@ namespace CFAStudentTracker.Controllers
             if (StartingSub == 0)
                 return "ALL";
 
-            double Term1Usage = record.AttendanceTermOne != null ? SulaTermMultipliers[record.AttendanceTermOne] / 2 : 0;
-            double Term2Usage = record.AttendanceTermTwo != null ? SulaTermMultipliers[record.AttendanceTermTwo] / 2 : 0;
+            double Term1Usage = record.AttendanceTermOne != null ? TermMultipliers[record.AttendanceTermOne] / 2 : 0;
+            double Term2Usage = record.AttendanceTermTwo != null ? TermMultipliers[record.AttendanceTermTwo] / 2 : 0;
             double RemainingUsage;
 
             if (record.SumUsagePeriods == null)

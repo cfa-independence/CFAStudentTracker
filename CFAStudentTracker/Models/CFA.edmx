@@ -825,8 +825,8 @@
           <NavigationProperty Name="StudentFile" Relationship="Self.FK_RecordFile" FromRole="Record" ToRole="StudentFile" />
           <Property Name="DependencyStatus" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="AcademicYear" Type="Byte" />
-          <Property Name="SubAggLimit" Type="Decimal" Precision="9" Scale="2" />
-          <Property Name="CombinedAggLimit" Type="Decimal" Precision="9" Scale="2" />
+          <Property Name="SubAgg" Type="Decimal" Precision="9" Scale="2" />
+          <Property Name="CombinedAgg" Type="Decimal" Precision="9" Scale="2" />
           <Property Name="IsProratedLoan" Type="Boolean" Nullable="false" />
           <Property Name="NumCredits" Type="Byte" />
           <Property Name="ExistingAYEndsBeforeTermTwo" Type="Boolean" />
@@ -836,7 +836,7 @@
           <Property Name="AttendanceTermOne" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="AttendanceTermTwo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="NumAcademicYearsInProgram" Type="Byte" />
-          <Property Name="AwardYear" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="AwardYear" MaxLength="10" FixedLength="false" Unicode="false" Type="String" />
           <Property Name="EFC" Type="Int32" />
           <Property Name="LEU" Type="Decimal" Precision="8" Scale="4" />
           <Property Name="PercentPellUsed" Type="Decimal" Precision="8" Scale="4" />
@@ -1122,7 +1122,7 @@
             <End Role="Queue" EntitySet="Queue" />
           </AssociationSet>
           <FunctionImport Name="AverageFilesPerHour" IsComposable="true" ReturnType="Collection(CFAModel.AverageFilesPerHour_Result)">
-            <Parameter Name="InDateOld" Mode="In" Type="DateTime" />
+          <Parameter Name="InDateOld" Mode="In" Type="DateTime" />
             <Parameter Name="InDateNew" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="FilesInQueue" IsComposable="true" ReturnType="Collection(CFAModel.FilesInQueue_Result)">
@@ -1135,14 +1135,14 @@
           <Parameter Name="InsUsername" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="UserQueue" IsComposable="true" ReturnType="Collection(CFAModel.UserQueue_Result)">
-            <Parameter Name="InsUsername" Mode="In" Type="String" />
+          <Parameter Name="InsUsername" Mode="In" Type="String" />
             <Parameter Name="InsQueueID" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="UsersInQueue" IsComposable="true" ReturnType="Collection(CFAModel.UsersInQueue_Result)">
           <Parameter Name="InsQueue" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="InsertIntoQueue">
-            <Parameter Name="FileSSN" Mode="In" Type="String" />
+          <Parameter Name="FileSSN" Mode="In" Type="String" />
             <Parameter Name="FileName" Mode="In" Type="String" />
             <Parameter Name="FileTypeID" Mode="In" Type="Int16" />
             <Parameter Name="QueueID" Mode="In" Type="Int16" />
@@ -1153,20 +1153,20 @@
             <Parameter Name="LDA" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="RemoveFromQueue">
-            <Parameter Name="FileSSN" Mode="In" Type="String" />
+          <Parameter Name="FileSSN" Mode="In" Type="String" />
             <Parameter Name="QueueID" Mode="In" Type="Int16" />
             <Parameter Name="Note1" Mode="In" Type="String" />
             <Parameter Name="Username" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_GetNextFile">
-            <Parameter Name="InsUsername" Mode="In" Type="String" />
+          <Parameter Name="InsUsername" Mode="In" Type="String" />
             <Parameter Name="QueueID" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="sp_InsertUser">
           <Parameter Name="InsUsername" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_CompleteProcessing">
-            <Parameter Name="InsProcID" Mode="In" Type="Int64" />
+          <Parameter Name="InsProcID" Mode="In" Type="Int64" />
             <Parameter Name="CurQueueID" Mode="In" Type="Int16" />
           </FunctionImport>
           <EntitySet Name="ProcessingError" EntityType="CFAModel.ProcessingError" />
@@ -1437,8 +1437,8 @@
                 <ScalarProperty Name="ExistingAYEndsBeforeTermTwo" ColumnName="ExistingAYEndsBeforeTermTwo" />
                 <ScalarProperty Name="NumCredits" ColumnName="NumCredits" />
                 <ScalarProperty Name="IsProratedLoan" ColumnName="IsProratedLoan" />
-                <ScalarProperty Name="CombinedAggLimit" ColumnName="CombinedAggLimit" />
-                <ScalarProperty Name="SubAggLimit" ColumnName="SubAggLimit" />
+                <ScalarProperty Name="CombinedAgg" ColumnName="CombinedAggLimit" />
+                <ScalarProperty Name="SubAgg" ColumnName="SubAggLimit" />
                 <ScalarProperty Name="AcademicYear" ColumnName="AcademicYear" />
                 <ScalarProperty Name="DependencyStatus" ColumnName="DependencyStatus" />
                 <ScalarProperty Name="RecordID" ColumnName="RecordID" />

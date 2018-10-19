@@ -683,6 +683,7 @@
     <Content Include="Views\FileOpen\CompleteError.cshtml" />
     <Content Include="Views\SystemManagement\DupSSNResolve.cshtml" />
     <Content Include="Views\MetricProgressReport\ErrorList.cshtml" />
+    <Content Include="Views\FileOpen\_CalculatorPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
