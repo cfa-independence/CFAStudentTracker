@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
+using Microsoft.AspNet.Identity;
 
 namespace CFAStudentTracker.Models
 {
@@ -14,13 +15,20 @@ namespace CFAStudentTracker.Models
         public List<QueueStat> queueStats;
         public double topUser;
         public MetricProgressViewModel MPVM { get; set; }
+        public bool canApprove { get; private set; }
 
         public int errors { get; set; }
         public List<UserStat> userStats { get; set; }
+        public List<TimeEntry> timeEntries { get; set; }       
 
 
-        public DashboardViewModel(string Username)
+        public DashboardViewModel(string Username, DateTime? date, string currentUser)
         {
+            DateTime start = date.HasValue ? date.Value.Date : DateTime.Now.Date;
+            DateTime end = start.AddDays(1).Date;
+            timeEntries = db.TimeEntry.Where(e => e.Username == Username && e.TimeEntryStart >= start && e.TimeEntryStart < end).OrderByDescending(e => e.TimeEntryId).ToList();
+
+            canApprove = Username != currentUser && db.User.Find(currentUser).IsSupervisor && db.User.Find(Username).SupervisorName == currentUser;
             MPVM = new MetricProgressViewModel(Username);
             queueStats = new List<QueueStat>();
             topUser = 1;

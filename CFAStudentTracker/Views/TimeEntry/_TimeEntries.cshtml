@@ -1,0 +1,47 @@
+﻿@model CFAStudentTracker.Models.DashboardViewModel
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h5>
+            Viewing Time Entries for:
+            <input type="text" class="form-control" id="date-picker" style="display: inline-block;" />
+        </h5>
+    </div>
+    <div class="panel-body" id="time-entries">
+        @Html.Partial("../TimeEntry/_TimeEntryTable")
+    </div>
+</div>
+
+<script type="text/javascript">    
+    var entryPicker = flatpickr('#date-picker', {
+        disable: [
+            function (date) {
+                return (date.getDay() == 6 || date.getDay() == 0)
+            }
+        ],        
+        onClose: function (selectedDates) {
+            getTimeEntries(selectedDates[0])
+        },
+        defaultDate: 'today',
+        dateFormat: 'm/d/Y',
+        maxDate: 'today'
+    });
+
+    var urlParams = new URLSearchParams(location.search);
+    for (entry of urlParams.entries()) {
+        if (entry[0] == "date") {
+            entryPicker.setDate(entry[1], true, "Z");
+        }
+    }  
+
+    function getTimeEntries(date) {
+        axios.get('/TimeEntry/GetTimeEntriesForDate', {
+                params: {
+                    username: '@Model.username',
+                    date: moment(date).format()
+                }
+            }).then(response => {                
+                document.getElementById('time-entries').innerHTML = response.data;
+            })
+    }
+</script>

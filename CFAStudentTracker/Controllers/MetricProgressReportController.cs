@@ -14,17 +14,16 @@ namespace CFAStudentTracker.Controllers
     public class MetricProgressReportController : Controller
     {
         // GET: MetricProgressReport
-        private CFAEntities db = new CFAEntities();
+        private CFAEntities db = new CFAEntities();        
         public ActionResult Index(string username)
         {
-            if (String.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
             {
                 username = User.Identity.Name;
-            }
+            }                
             
             
-            MetricProgressViewModel mp = new MetricProgressViewModel(username);
-            
+            MetricProgressViewModel mp = new MetricProgressViewModel(username);            
             
             
             
@@ -33,9 +32,15 @@ namespace CFAStudentTracker.Controllers
         }
         public ActionResult ErrorList(string username, DateTime lastUpdated, int days)
         {
-            DateTime begin = lastUpdated.AddDays(days*-1);
-            DateTime end = lastUpdated.AddDays(1);
-            var list = db.ProcessingError.Include(p => p.ErrorComplete).Include(p => p.ErrorType).Include(p => p.Processing).Where(p => p.Processing.Username == username && p.DateFound >= begin && p.DateFound <= end);
+            List<ProcessingError> list = new List<ProcessingError>();
+            if (lastUpdated > DateTime.MinValue)
+            {
+                DateTime begin = lastUpdated.AddDays(days * -1);
+                DateTime end = lastUpdated.AddDays(1);
+                ViewBag.Username = username;
+                list = db.ProcessingError.Include(p => p.ErrorComplete).Include(p => p.ErrorType).Include(p => p.Processing).Where(p => p.Processing.Username == username && p.DateFound >= begin && p.DateFound <= end).ToList();
+            }
+            
             return View(list);
         }
     }

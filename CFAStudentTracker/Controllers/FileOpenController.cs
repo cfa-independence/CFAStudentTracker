@@ -19,8 +19,8 @@ namespace CFAStudentTracker.Controllers
         private CFAEntities db = new CFAEntities();
         private MembershipEntities dbUser = new MembershipEntities();
 
-        private string DecimalAmountFormat = "{0:C2}";
-        private string DecimalPercentFormat = "{0:#.0000}%";
+        private readonly string DecimalAmountFormat = "{0:C2}";
+        private readonly string DecimalPercentFormat = "{0:#.0000}%";
 
         private struct CLE
         {
@@ -115,7 +115,7 @@ namespace CFAStudentTracker.Controllers
 
         };
 
-        private Dictionary<string, int> RegionForState = new Dictionary<string, int>()
+        private readonly Dictionary<string, int> RegionForState = new Dictionary<string, int>()
         {
             { "AK", 1 }, { "AL", 7 }, { "AR", 5 }, { "AZ", 1 }, { "CA", 3 },
             { "CO", 1 }, { "CT", 4 }, { "DC", 8 }, { "DE", 6 }, { "FL", 7 },
@@ -130,7 +130,7 @@ namespace CFAStudentTracker.Controllers
             { "WI", 2 }, { "WV", 8 }, { "WY", 1 }
         };
 
-        private Dictionary<int, CLE> WithParentsCLE1718 = new Dictionary<int, CLE>()
+        private readonly Dictionary<int, CLE> WithParentsCLE1718 = new Dictionary<int, CLE>()
         {
             { 1, new CLE(731, 243, 379) },
             { 2, new CLE(715, 238, 371) },
@@ -142,7 +142,7 @@ namespace CFAStudentTracker.Controllers
             { 8, new CLE(837, 279, 434) },
         };
 
-        private Dictionary<int, CLE> OffCampusCLE1718 = new Dictionary<int, CLE>()
+        private readonly Dictionary<int, CLE> OffCampusCLE1718 = new Dictionary<int, CLE>()
         {
             { 1, new CLE(1090, 364, 566) },
             { 2, new CLE(1067, 357, 553) },
@@ -154,7 +154,7 @@ namespace CFAStudentTracker.Controllers
             { 8, new CLE(1249, 416, 648) }
         };
 
-        private Dictionary<int, CLE> WithParentsCLE1819 = new Dictionary<int, CLE>()
+        private readonly Dictionary<int, CLE> WithParentsCLE1819 = new Dictionary<int, CLE>()
         {
             { 1, new CLE(778, 265, 425) },
             { 2, new CLE(809, 275, 443) },
@@ -166,7 +166,7 @@ namespace CFAStudentTracker.Controllers
             { 8, new CLE(824, 280, 451) }
         };
 
-        private Dictionary<int, CLE> OffCampusCLE1819 = new Dictionary<int, CLE>()
+        private readonly Dictionary<int, CLE> OffCampusCLE1819 = new Dictionary<int, CLE>()
         {
             { 1, new CLE(1162, 395, 636) },
             { 2, new CLE(1208, 410, 661) },
@@ -176,17 +176,9 @@ namespace CFAStudentTracker.Controllers
             { 6, new CLE(1175, 399, 643) },
             { 7, new CLE(1120, 380, 613) },
             { 8, new CLE(1230, 418, 673) }
-        };
+        };        
 
-        private Dictionary<string, decimal> PellByAY = new Dictionary<string, decimal>()
-        {
-            { "", 0 },
-            { "'17-'18", 0 },
-            { "'18-'19", 6095 },
-            { "'19-'20", 0 }
-        };
-
-        private Dictionary<int, decimal> SubAmounts = new Dictionary<int, decimal>()
+        private readonly Dictionary<int, decimal> SubAmounts = new Dictionary<int, decimal>()
             {
                 { 0, 0 },
                 { 1, 3500 },
@@ -195,7 +187,7 @@ namespace CFAStudentTracker.Controllers
                 { 6, 0 }
             };
 
-        private Dictionary<int, decimal> UnsubAmounts = new Dictionary<int, decimal>()
+        private readonly Dictionary<int, decimal> UnsubAmounts = new Dictionary<int, decimal>()
             {
                 { 0, 0 },
                 { 1, 6000 },
@@ -204,7 +196,7 @@ namespace CFAStudentTracker.Controllers
                 { 6, 20500 }
             };
 
-        private Dictionary<string, double> TermMultipliers = new Dictionary<string, double>()
+        private readonly Dictionary<string, double> TermMultipliers = new Dictionary<string, double>()
             {
                 { "", 0 },
                 { "full-time", 1 },
@@ -216,8 +208,10 @@ namespace CFAStudentTracker.Controllers
         private ProcessingDetail GetProcessingDetail(long id)
         {
             ViewBag.id = id;
-            ProcessingDetail re = new ProcessingDetail();
-            re.Proc = db.Processing.Include(p => p.Queue).Where(p => p.ProcID == id).ToList()[0];
+            ProcessingDetail re = new ProcessingDetail
+            {
+                Proc = db.Processing.Include(p => p.Queue).Where(p => p.ProcID == id).ToList()[0]
+            };
             re.Rec = db.Record.Include(r => r.Processing).Include(r => r.Note).Include(r => r.StudentFile).Include(r => r.FileType).Where(r => r.RecordID == re.Proc.RecordID).ToList()[0];
 
             List<FileDetail> dt = new List<FileDetail>();
@@ -294,9 +288,9 @@ namespace CFAStudentTracker.Controllers
             var userN = dbUser.AspNetUsers.Where(p => p.UserName == User.Identity.Name).First();
             if (userN.AspNetRoles.First().Name == "QC Officer" || userN.AspNetRoles.First().Name == "Admin")
             {
-                return Redirect(Url.Action("OpenAdmin", "FileOpen", new { id, mainReturn = ViewBag.mainReturn }));
+                return Redirect(Url.Action("OpenAdmin", "FileOpen", new { id, ViewBag.mainReturn }));
             }
-            ViewBag.OpenReturn = Url.Action("OpenFile", "FileOpen", new { id, mainReturn = ViewBag.mainReturn });
+            ViewBag.OpenReturn = Url.Action("OpenFile", "FileOpen", new { id, ViewBag.mainReturn });
             ProcessingDetail re = GetProcessingDetail(id);
 
             return View(re);
@@ -313,7 +307,7 @@ namespace CFAStudentTracker.Controllers
             {
                 ViewBag.mainReturn = mainReturn;
             }
-            ViewBag.OpenReturn = Url.Action("OpenAdmin", "FileOpen", new { id, mainReturn = ViewBag.mainReturn });
+            ViewBag.OpenReturn = Url.Action("OpenAdmin", "FileOpen", new { id, ViewBag.mainReturn });
             ProcessingDetail re = GetProcessingDetail(id);
             
             return View(re);
@@ -470,9 +464,9 @@ namespace CFAStudentTracker.Controllers
                 FinalMaxAmountTotal = Math.Floor(temp) + Math.Floor(temp2);
             }
 
-            string StatusTermOne = (record.StatusTermOne != null) ? record.StatusTermOne : "";
-            string StatusTermTwo = (record.StatusTermTwo != null) ? record.StatusTermTwo : "";
-            string StatusTermThree = (record.StatusTermThree != null) ? record.StatusTermThree : "";
+            string StatusTermOne = record.StatusTermOne ?? "";
+            string StatusTermTwo = record.StatusTermTwo ?? "";
+            string StatusTermThree = record.StatusTermThree ?? "";
 
             decimal FinalMaxAmountTerm1 = Math.Min(FinalMaxAmountTotal, Math.Ceiling(MaxPellAY * ((decimal)TermMultipliers[StatusTermOne] / 2)));
             decimal FinalMaxAmountTerm2 = Math.Min(FinalMaxAmountTotal - FinalMaxAmountTerm1, Math.Floor(MaxPellAY * ((decimal)TermMultipliers[StatusTermTwo] / 2)));
@@ -584,15 +578,17 @@ namespace CFAStudentTracker.Controllers
             {
                 if (db.Processing.Where(p => p.RecordID == student.RecordID && p.QueueID == student.Queue.QueueNextQueue).Count() == 0)
                 {
-                    Processing newProcessing = new Processing();
-                    newProcessing.InFilingCabinet = false;
-                    newProcessing.ProcessingError = null;
-                    newProcessing.ProcInQueue = DateTime.Now;
-                    newProcessing.ProcToUser = null;
-                    newProcessing.ProcUserComplete = null;
-                    newProcessing.QueueID = student.Queue.QueueNextQueue.Value;
-                    newProcessing.RecordID = student.RecordID;
-                    newProcessing.Username = null;
+                    Processing newProcessing = new Processing
+                    {
+                        InFilingCabinet = false,
+                        ProcessingError = null,
+                        ProcInQueue = DateTime.Now,
+                        ProcToUser = null,
+                        ProcUserComplete = null,
+                        QueueID = student.Queue.QueueNextQueue.Value,
+                        RecordID = student.RecordID,
+                        Username = null
+                    };
                     db.Processing.Add(newProcessing);
                     await db.SaveChangesAsync();
                     var nextStudent = db.Processing.Find(newProcessing.ProcID);
@@ -706,9 +702,11 @@ namespace CFAStudentTracker.Controllers
             ViewBag.mainReturn = mainReturn;
             long x = long.Parse(ProcessingID);
             var i = db.Processing.Where(p => p.ProcID == x).ToList()[0];
-            Note note = new Note();
-            note.RecordID = i.RecordID;
-            note.Username = i.Username;
+            Note note = new Note
+            {
+                RecordID = i.RecordID,
+                Username = i.Username
+            };
             return View(note);
         }
 
@@ -757,7 +755,7 @@ namespace CFAStudentTracker.Controllers
             if (processing.ProcUserComplete == null || userN.AspNetRoles.First().Name == "Admin")
             {
                 ViewBag.mainReturn = mainReturn;
-                ViewBag.Username = new SelectList(db.User, "Username", "Username");
+                ViewBag.Username = new SelectList(db.User.Where(u => u.IsActive), "Username", "Username");
                 return View(processing);
             }
             return View(db.Processing.Find(processing.ProcID));
@@ -782,10 +780,12 @@ namespace CFAStudentTracker.Controllers
             {
                 noteString = processing.Username;
             }
-            Note note = new Note();
-            note.Username = User.Identity.Name;
-            note.RecordID = processing.RecordID;
-            note.Note1 = "Reassigned to " + noteString;
+            Note note = new Note
+            {
+                Username = User.Identity.Name,
+                RecordID = processing.RecordID,
+                Note1 = "Reassigned to " + noteString
+            };
             if (ModelState.IsValid)
             {
                 db.Note.Add(note);
@@ -798,7 +798,7 @@ namespace CFAStudentTracker.Controllers
                 return Redirect(mainReturn);
             }
 
-            ViewBag.Username = new SelectList(db.User, "Username", "Username");
+            ViewBag.Username = new SelectList(db.User.Where(u => u.IsActive), "Username", "Username");
             return View(db.Processing.Find(processing.ProcID));
         }
 
@@ -843,8 +843,10 @@ namespace CFAStudentTracker.Controllers
         public ActionResult Create(long? id, string mainReturn)
         {
             ViewBag.mainReturn = mainReturn;
-            ProcessingError i = new ProcessingError();
-            i.ProcID = id;
+            ProcessingError i = new ProcessingError
+            {
+                ProcID = id
+            };
             ViewBag.ErrorTypeID = new SelectList(db.ErrorType, "ErrorTypeID", "Description");
             return View(i);
         }
@@ -986,7 +988,7 @@ namespace CFAStudentTracker.Controllers
             var returnID = errorComplete.ProcID;
             db.ProcessingError.Remove(errorComplete);
             await db.SaveChangesAsync();
-            return RedirectToAction("OpenAdmin", new { id = returnID, mainReturn = mainReturn });
+            return RedirectToAction("OpenAdmin", new { id = returnID, mainReturn });
         }
         #endregion
 

@@ -9,10 +9,11 @@
         <EntityTypeShape EntityType="MembershipModel.AspNetRole" Width="1.5" PointX="0.75" PointY="2.5" IsExpanded="true" />
         <EntityTypeShape EntityType="MembershipModel.AspNetUserClaim" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="MembershipModel.AspNetUserLogin" Width="1.5" PointX="5.25" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="MembershipModel.AspNetUser" Width="1.5" PointX="3" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MembershipModel.AspNetUser" Width="1.5" PointX="3.125" PointY="1.375" IsExpanded="true" />
         <AssociationConnector Association="MembershipModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
         <AssociationConnector Association="MembershipModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
         <AssociationConnector Association="MembershipModel.AspNetUserRoles" ManuallyRouted="false" />
+        <AssociationConnector Association="MembershipModel.FK_AspNetUsers_ToAspNetUsers" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -96,6 +96,18 @@ namespace CFAStudentTracker
         {
         }
 
+        public async override Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool rememberMe, bool shouldLockout)
+        {
+            var user = await UserManager.FindByNameAsync(userName);
+
+            if (!user.IsActive)
+            {
+                return SignInStatus.LockedOut;
+            }
+
+            return await base.PasswordSignInAsync(userName, password, rememberMe, shouldLockout);
+        }
+
         public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
         {
             return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);

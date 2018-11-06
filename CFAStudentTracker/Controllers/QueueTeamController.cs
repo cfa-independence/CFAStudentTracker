@@ -25,7 +25,7 @@ namespace CFAStudentTracker.Controllers
         // GET: QueueTeam/Create
         public ActionResult Create(short? id)
         {
-            ViewBag.Username = new SelectList(db.User, "Username", "Username");
+            ViewBag.Username = new SelectList(db.User.Where(u => u.IsActive), "Username", "Username");
             ViewBag.id = id;
             return View();
         }
@@ -46,7 +46,7 @@ namespace CFAStudentTracker.Controllers
                 return RedirectToAction("Index", new { id = id});
             }
 
-            ViewBag.Username = new SelectList(db.User, "Username", "Username");
+            ViewBag.Username = new SelectList(db.User.Where(u => u.IsActive), "Username", "Username");
             ViewBag.QueueID = id;
             return View();
         }

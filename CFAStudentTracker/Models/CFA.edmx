@@ -170,11 +170,33 @@
           <Property Name="FileSSN" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="FileName" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="TimeCategory">
+          <Key>
+            <PropertyRef Name="TimeCategoryId" />
+          </Key>
+          <Property Name="TimeCategoryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TimeCategoryTitle" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TimeEntry">
+          <Key>
+            <PropertyRef Name="TimeEntryId" />
+          </Key>
+          <Property Name="TimeEntryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TimeEntryStart" Type="datetime" Nullable="false" />
+          <Property Name="TimeEntryEnd" Type="datetime" />
+          <Property Name="TimeEntryDescription" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="TimeCategoryId" Type="int" Nullable="false" />
+          <Property Name="Username" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsApproved" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="Username" />
           </Key>
           <Property Name="Username" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="IsSupervisor" Type="bit" Nullable="false" />
+          <Property Name="SupervisorName" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="WeightedFile">
           <Key>
@@ -461,6 +483,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TimeEntry_ToTimeCategory">
+          <End Role="TimeCategory" Type="Self.TimeCategory" Multiplicity="1" />
+          <End Role="TimeEntry" Type="Self.TimeEntry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TimeCategory">
+              <PropertyRef Name="TimeCategoryId" />
+            </Principal>
+            <Dependent Role="TimeEntry">
+              <PropertyRef Name="TimeCategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TimeEntry_ToUser">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="TimeEntry" Type="Self.TimeEntry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Username" />
+            </Principal>
+            <Dependent Role="TimeEntry">
+              <PropertyRef Name="Username" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Function Name="AverageFilesPerHour" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="InDateOld" Type="date" Mode="In" />
           <Parameter Name="InDateNew" Type="date" Mode="In" />
@@ -522,6 +568,8 @@
         </Function>
         <Function Name="sp_InsertUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="InsUsername" Type="varchar" Mode="In" />
+          <Parameter Name="insIsActive" Type="bit" Mode="In" />
+          <Parameter Name="insIsSupervisor" Type="bit" Mode="In" />
         </Function>
         <Function Name="UserFilingCabinet" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="InsUsername" Type="varchar" Mode="In" />
@@ -581,6 +629,8 @@
           <EntitySet Name="QueueTeam" EntityType="Self.QueueTeam" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Record" EntityType="Self.Record" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StudentFile" EntityType="Self.StudentFile" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TimeCategory" EntityType="Self.TimeCategory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TimeEntry" EntityType="Self.TimeEntry" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeightedFile" EntityType="Self.WeightedFile" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK__Processin__Error__336AA144" Association="Self.FK__Processin__Error__336AA144">
@@ -666,6 +716,14 @@
           <AssociationSet Name="FK_RecordType" Association="Self.FK_RecordType">
             <End Role="FileType" EntitySet="FileType" />
             <End Role="Record" EntitySet="Record" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TimeEntry_ToTimeCategory" Association="Self.FK_TimeEntry_ToTimeCategory">
+            <End Role="TimeCategory" EntitySet="TimeCategory" />
+            <End Role="TimeEntry" EntitySet="TimeEntry" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TimeEntry_ToUser" Association="Self.FK_TimeEntry_ToUser">
+            <End Role="User" EntitySet="User" />
+            <End Role="TimeEntry" EntitySet="TimeEntry" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -869,6 +927,10 @@
           <NavigationProperty Name="Note" Relationship="Self.FK_NoteUser" FromRole="User" ToRole="Note" />
           <NavigationProperty Name="Processing" Relationship="Self.FK_ProcessingUser" FromRole="User" ToRole="Processing" />
           <NavigationProperty Name="Queue" Relationship="Self.QueueTeam" FromRole="User" ToRole="Queue" />
+          <NavigationProperty Name="TimeEntry" Relationship="CFAModel.FK_TimeEntry_ToUser" FromRole="User" ToRole="TimeEntry" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsSupervisor" Type="Boolean" Nullable="false" />
+          <Property Name="SupervisorName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_QPType">
           <End Role="FileType" Type="Self.FileType" Multiplicity="1">
@@ -1122,7 +1184,7 @@
             <End Role="Queue" EntitySet="Queue" />
           </AssociationSet>
           <FunctionImport Name="AverageFilesPerHour" IsComposable="true" ReturnType="Collection(CFAModel.AverageFilesPerHour_Result)">
-          <Parameter Name="InDateOld" Mode="In" Type="DateTime" />
+            <Parameter Name="InDateOld" Mode="In" Type="DateTime" />
             <Parameter Name="InDateNew" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="FilesInQueue" IsComposable="true" ReturnType="Collection(CFAModel.FilesInQueue_Result)">
@@ -1135,14 +1197,14 @@
           <Parameter Name="InsUsername" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="UserQueue" IsComposable="true" ReturnType="Collection(CFAModel.UserQueue_Result)">
-          <Parameter Name="InsUsername" Mode="In" Type="String" />
+            <Parameter Name="InsUsername" Mode="In" Type="String" />
             <Parameter Name="InsQueueID" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="UsersInQueue" IsComposable="true" ReturnType="Collection(CFAModel.UsersInQueue_Result)">
           <Parameter Name="InsQueue" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="InsertIntoQueue">
-          <Parameter Name="FileSSN" Mode="In" Type="String" />
+            <Parameter Name="FileSSN" Mode="In" Type="String" />
             <Parameter Name="FileName" Mode="In" Type="String" />
             <Parameter Name="FileTypeID" Mode="In" Type="Int16" />
             <Parameter Name="QueueID" Mode="In" Type="Int16" />
@@ -1153,20 +1215,22 @@
             <Parameter Name="LDA" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="RemoveFromQueue">
-          <Parameter Name="FileSSN" Mode="In" Type="String" />
+            <Parameter Name="FileSSN" Mode="In" Type="String" />
             <Parameter Name="QueueID" Mode="In" Type="Int16" />
             <Parameter Name="Note1" Mode="In" Type="String" />
             <Parameter Name="Username" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_GetNextFile">
-          <Parameter Name="InsUsername" Mode="In" Type="String" />
+            <Parameter Name="InsUsername" Mode="In" Type="String" />
             <Parameter Name="QueueID" Mode="In" Type="Int16" />
           </FunctionImport>
           <FunctionImport Name="sp_InsertUser">
-          <Parameter Name="InsUsername" Mode="In" Type="String" />
+            <Parameter Name="InsUsername" Mode="In" Type="String" />
+            <Parameter Name="insIsActive" Mode="In" Type="Boolean" />
+            <Parameter Name="insIsSupervisor" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="sp_CompleteProcessing">
-          <Parameter Name="InsProcID" Mode="In" Type="Int64" />
+            <Parameter Name="InsProcID" Mode="In" Type="Int64" />
             <Parameter Name="CurQueueID" Mode="In" Type="Int16" />
           </FunctionImport>
           <EntitySet Name="ProcessingError" EntityType="CFAModel.ProcessingError" />
@@ -1196,6 +1260,16 @@
           <AssociationSet Name="FK_QueueWeight" Association="CFAModel.FK_QueueWeight">
             <End Role="Queue" EntitySet="Queue" />
             <End Role="WeightedFile" EntitySet="WeightedFile" />
+          </AssociationSet>
+          <EntitySet Name="TimeCategory" EntityType="CFAModel.TimeCategory" />
+          <EntitySet Name="TimeEntry" EntityType="CFAModel.TimeEntry" />
+          <AssociationSet Name="FK_TimeEntry_ToTimeCategory" Association="CFAModel.FK_TimeEntry_ToTimeCategory">
+            <End Role="TimeCategory" EntitySet="TimeCategory" />
+            <End Role="TimeEntry" EntitySet="TimeEntry" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TimeEntry_ToUser" Association="CFAModel.FK_TimeEntry_ToUser">
+            <End Role="User" EntitySet="User" />
+            <End Role="TimeEntry" EntitySet="TimeEntry" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="ProcessingError">
@@ -1310,6 +1384,52 @@
             </Principal>
             <Dependent Role="WeightedFile">
               <PropertyRef Name="QueueID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TimeCategory">
+          <Key>
+            <PropertyRef Name="TimeCategoryId" />
+          </Key>
+          <Property Name="TimeCategoryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TimeCategoryTitle" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TimeEntry" Relationship="CFAModel.FK_TimeEntry_ToTimeCategory" FromRole="TimeCategory" ToRole="TimeEntry" />
+        </EntityType>
+        <EntityType Name="TimeEntry">
+          <Key>
+            <PropertyRef Name="TimeEntryId" />
+          </Key>
+          <Property Name="TimeEntryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TimeEntryStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TimeEntryEnd" Type="DateTime" Precision="3" />
+          <Property Name="TimeEntryDescription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TimeCategoryId" Type="Int32" Nullable="false" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TimeCategory" Relationship="CFAModel.FK_TimeEntry_ToTimeCategory" FromRole="TimeEntry" ToRole="TimeCategory" />
+          <NavigationProperty Name="User" Relationship="CFAModel.FK_TimeEntry_ToUser" FromRole="TimeEntry" ToRole="User" />
+          <Property Name="IsApproved" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_TimeEntry_ToTimeCategory">
+          <End Type="CFAModel.TimeCategory" Role="TimeCategory" Multiplicity="1" />
+          <End Type="CFAModel.TimeEntry" Role="TimeEntry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TimeCategory">
+              <PropertyRef Name="TimeCategoryId" />
+            </Principal>
+            <Dependent Role="TimeEntry">
+              <PropertyRef Name="TimeCategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TimeEntry_ToUser">
+          <End Type="CFAModel.User" Role="User" Multiplicity="1" />
+          <End Type="CFAModel.TimeEntry" Role="TimeEntry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Username" />
+            </Principal>
+            <Dependent Role="TimeEntry">
+              <PropertyRef Name="Username" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1462,6 +1582,9 @@
           <EntitySetMapping Name="User">
             <EntityTypeMapping TypeName="CFAModel.User">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="SupervisorName" ColumnName="SupervisorName" />
+                <ScalarProperty Name="IsSupervisor" ColumnName="IsSupervisor" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -1568,6 +1691,27 @@
                 <ScalarProperty Name="WeightedAmount" ColumnName="WeightedAmount" />
                 <ScalarProperty Name="FileTypeID" ColumnName="FileTypeID" />
                 <ScalarProperty Name="QueueID" ColumnName="QueueID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TimeCategory">
+            <EntityTypeMapping TypeName="CFAModel.TimeCategory">
+              <MappingFragment StoreEntitySet="TimeCategory">
+                <ScalarProperty Name="TimeCategoryTitle" ColumnName="TimeCategoryTitle" />
+                <ScalarProperty Name="TimeCategoryId" ColumnName="TimeCategoryId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TimeEntry">
+            <EntityTypeMapping TypeName="CFAModel.TimeEntry">
+              <MappingFragment StoreEntitySet="TimeEntry">
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="TimeCategoryId" ColumnName="TimeCategoryId" />
+                <ScalarProperty Name="TimeEntryDescription" ColumnName="TimeEntryDescription" />
+                <ScalarProperty Name="TimeEntryEnd" ColumnName="TimeEntryEnd" />
+                <ScalarProperty Name="TimeEntryStart" ColumnName="TimeEntryStart" />
+                <ScalarProperty Name="TimeEntryId" ColumnName="TimeEntryId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

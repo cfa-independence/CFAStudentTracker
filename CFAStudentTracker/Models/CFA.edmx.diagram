@@ -8,15 +8,15 @@
         <EntityTypeShape EntityType="CFAModel.FileType" Width="1.5" PointX="11.75" PointY="4.25" IsExpanded="true" />
         <EntityTypeShape EntityType="CFAModel.GlobalSettings" Width="1.5" PointX="0.625" PointY="11.75" IsExpanded="true" />
         <EntityTypeShape EntityType="CFAModel.Group" Width="1.5" PointX="1" PointY="6.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="CFAModel.Hour" Width="1.5" PointX="0.625" PointY="2.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="CFAModel.Note" Width="1.5" PointX="7" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Hour" Width="1.5" PointX="1.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Note" Width="1.5" PointX="17.25" PointY="7.875" IsExpanded="true" />
         <EntityTypeShape EntityType="CFAModel.Processing" Width="1.5" PointX="6.875" PointY="3.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="CFAModel.Queue" Width="1.5" PointX="4.375" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.Queue" Width="1.5" PointX="4.375" PointY="6.875" IsExpanded="true" />
         <EntityTypeShape EntityType="CFAModel.QueueOrder" Width="1.5" PointX="1" PointY="8.375" IsExpanded="true" />
         <EntityTypeShape EntityType="CFAModel.QueuePriority" Width="1.5" PointX="9.375" PointY="4.25" IsExpanded="true" />
         <EntityTypeShape EntityType="CFAModel.Record" Width="2.25" PointX="14.25" PointY="0.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="CFAModel.StudentFile" Width="1.5" PointX="12.125" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="CFAModel.User" Width="1.5" PointX="4.125" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.StudentFile" Width="1.5" PointX="11.75" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CFAModel.User" Width="1.5" PointX="4.125" PointY="2.75" IsExpanded="true" />
         <AssociationConnector Association="CFAModel.FK_QPType" ManuallyRouted="false" />
         <AssociationConnector Association="CFAModel.FK_RecordType" ManuallyRouted="false" />
         <AssociationConnector Association="CFAModel.FK_QueueGroup" ManuallyRouted="false" />
@@ -38,9 +38,13 @@
         <AssociationConnector Association="CFAModel.FK__Processin__Error__345EC57D" />
         <AssociationConnector Association="CFAModel.FK__Processin__Error__336AA144" />
         <AssociationConnector Association="CFAModel.FK_AuditQueue" />
-        <EntityTypeShape EntityType="CFAModel.WeightedFile" Width="1.5" PointX="3.375" PointY="11.75" />
+        <EntityTypeShape EntityType="CFAModel.WeightedFile" Width="1.5" PointX="3.125" PointY="12.25" />
         <AssociationConnector Association="CFAModel.FK_FileWeight" />
         <AssociationConnector Association="CFAModel.FK_QueueWeight" />
+        <EntityTypeShape EntityType="CFAModel.TimeCategory" Width="1.5" PointX="6.125" PointY="1" />
+        <EntityTypeShape EntityType="CFAModel.TimeEntry" Width="1.5" PointX="1.75" PointY="0.5" />
+        <AssociationConnector Association="CFAModel.FK_TimeEntry_ToTimeCategory" />
+        <AssociationConnector Association="CFAModel.FK_TimeEntry_ToUser" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

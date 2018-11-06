@@ -127,10 +127,27 @@ namespace CFAStudentTracker.Models
             Helpers h = new Helpers();
             double totalWeightedFiles = h.WeightedFileAmount(FirstDate,LastDate, username);
 
-            var weightedAvg = totalWeightedFiles / hoursWorked;
+            double approvedTimeEntryHours = FindApprovedTimeEntries(FirstDate, LastDate);
+
+            var weightedAvg = totalWeightedFiles / (hoursWorked - approvedTimeEntryHours);
 
             return weightedAvg;
         }
+
+        public double FindApprovedTimeEntries(DateTime begin, DateTime end)
+        {
+            double approvedHours = 0;
+
+            List<TimeEntry> timeEntries = db.TimeEntry.Where(e => e.TimeEntryEnd != null && e.TimeEntryStart >= begin && e.TimeEntryEnd < end && e.Username == username && e.IsApproved).ToList();
+            foreach (TimeEntry timeEntry in timeEntries)
+            {
+                TimeSpan duration = timeEntry.TimeEntryEnd.Value - timeEntry.TimeEntryStart;
+                approvedHours += duration.TotalHours;
+            }
+
+            return approvedHours;
+        }
+
         public List<StringAndInt> FindFiles(int days)
         {
             DateTime FirstDate = db.Hour.Where(p => p.Username == username).OrderByDescending(p => p.HourDate).First().HourDate.AddDays(-days);

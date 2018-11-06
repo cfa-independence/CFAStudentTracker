@@ -19,12 +19,15 @@ namespace CFAStudentTracker.Models
             UserViewModels = new List<MetricProgressViewModel>();
             var users = db.Queue.Include(q => q.User).Where(q => q.GroupID == group).Select(p=>p.User);
             foreach (var item in users)
-            {
+            {                
                 foreach (var user in item)
                 {
                     if(UserViewModels.Where(p=>p.username == user.Username).Count() == 0)
                     {
-                        UserViewModels.Add(new MetricProgressViewModel(user.Username));
+                        if (user.IsActive)
+                        {
+                            UserViewModels.Add(new MetricProgressViewModel(user.Username));
+                        }
                     }
                 }
                 

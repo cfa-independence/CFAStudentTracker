@@ -3,155 +3,178 @@
 @{
     ViewBag.Title = "Home Page";
 }
-<h1>Dashboard</h1> 
 
-<div class="row">
-    <div class="col-lg-3 col-md-6">
-        <div class="panel panel-red">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <i class="glyphicon glyphicon-alert fa-5x"></i>
+<div id="dashboard">
+    <h1>Dashboard</h1>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="glyphicon glyphicon-alert fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">@Model.errors</div>
+                                    <div>Pending Errors</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">@Html.ActionLink("View Details", "../UserErrorList/Index")</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
                     </div>
-                    <div class="col-xs-9 text-right">
-                        <div class="huge">@Model.errors</div>
-                        <div>Pending Errors</div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-th-list fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">@ViewBag.UserQueue</div>
+                                    <div>Personal Queues</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">@Html.ActionLink("View Details", "../UserQueue/Index")</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-archive fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">@ViewBag.FilingCabinet</div>
+                                    <div>Filing Cabinet</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">@Html.ActionLink("Filing Cabinet", "../UserFilingCabinet/Index")</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
-            <a href="#">
-                <div class="panel-footer">
-                    <span class="pull-left">@Html.ActionLink("View Details", "../UserErrorList/Index")</span>
-                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <i class="fa fa-th-list fa-5x"></i>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div class="huge">@ViewBag.UserQueue</div>
-                        <div>Personal Queues</div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="row">
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    @Html.Partial("../TimeEntry/_TimeEntries", Model)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            Progress Overview
+
+                            <h5>Last Updated @Model.MPVM.LastUpdated.ToString("MM/dd/yyyy")</h5>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>14 Days</th>
+                                            <th>28 Days</th>
+                                            <th>56 Days</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Productivity Percent</td>
+                                            <td>@String.Format("{0:#,0.000}", Model.MPVM.PerHour14 * 100)%</td>
+                                            <td>@String.Format("{0:#,0.000}", Model.MPVM.PerHour28 * 100)%</td>
+                                            <td>@String.Format("{0:#,0.000}", Model.MPVM.PerHour56 * 100)%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Reject Percent</td>
+                                            <td>@String.Format("{0:#,0.000}", Model.MPVM.ErrPercent14)%</td>
+                                            <td>@String.Format("{0:#,0.000}", Model.MPVM.ErrPercent28)%</td>
+                                            <td>@String.Format("{0:#,0.000}", Model.MPVM.ErrPercent56)%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <a href="#">
-                <div class="panel-footer">
-                    <span class="pull-left">@Html.ActionLink("View Details", "../UserQueue/Index")</span>
-                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
         </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="panel panel-green">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <i class="fa fa-archive fa-5x"></i>
+
+        <div class="col-lg-4">
+            <div class="row">
+                @foreach (var item in Model.queueStats)
+                {
+
+
+                    <div class="col-xs-12">
+                        <h3>Queue: @item.queue.QueueDescription </h3>
+                        <h4>Average Queue Time: @item.AvgQueueTime days</h4>
+                        @foreach (var x in item.fileTypeAmount)
+                        {
+                            <p>
+                                <strong>@x.MyString</strong>
+                                <span class="pull-right text-muted">@x.MyInt in queue</span>
+                            </p>
+                            <div class="progress progress-striped active">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@x.MyInt" aria-valuemin="0" aria-valuemax="@item.highestTypeAmount" style="width: @(x.MyInt / item.highestTypeAmount * 100)%">
+
+                                </div>
+                            </div>
+                        }
                     </div>
-                    <div class="col-xs-9 text-right">
-                        <div class="huge">@ViewBag.FilingCabinet</div>
-                        <div>Filing Cabinet</div>
-                    </div>
-                </div>
+
+
+                }
+                @*<div class="col-md-6">
+                        <h3>Today's File Processed Ranking </h3>
+                        @foreach (var x in Model.userStats)
+                        {
+                            <p>
+                                <strong>@x.user.Username</strong>
+                                <span class="pull-right text-muted">@x.processedToday processed</span>
+                            </p>
+                            <div class="progress progress-striped active">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@x.processedToday" aria-valuemin="0" aria-valuemax="@Model.topUser" style="width: @((double)x.processedToday / (double)Model.topUser * 100.0)%">
+
+                                </div>
+                            </div>
+                        }
+                    </div>*@
             </div>
-            <a href="#">
-                <div class="panel-footer">
-                    <span class="pull-left">@Html.ActionLink("Filing Cabinet", "../UserFilingCabinet/Index")</span>
-                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-lg-12">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                Progress Overview
 
-                <h5>Last Updated @Model.MPVM.LastUpdated.ToString("MM/dd/yyyy")</h5>
-            </div>
-            <div class="panel-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>14 Days</th>
-                                <th>28 Days</th>
-                                <th>56 Days</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Productivity Percent</td>
-                                <td>@String.Format("{0:#,0.000}", Model.MPVM.PerHour14 * 100)%</td>
-                                <td>@String.Format("{0:#,0.000}", Model.MPVM.PerHour28 * 100)%</td>
-                                <td>@String.Format("{0:#,0.000}", Model.MPVM.PerHour56 * 100)%</td>
-                            </tr>
-                            <tr>
-                                <td>Reject Percent</td>
-                                <td>@String.Format("{0:#,0.000}", Model.MPVM.ErrPercent14)%</td>
-                                <td>@String.Format("{0:#,0.000}", Model.MPVM.ErrPercent28)%</td>
-                                <td>@String.Format("{0:#,0.000}", Model.MPVM.ErrPercent56)%</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    @foreach (var item in Model.queueStats)
-    {
-
-        
-        <div class="col-md-6">
-            <h3>Queue: @item.queue.QueueDescription </h3>
-            <h4>Average Queue Time: @item.AvgQueueTime days</h4>
-            @foreach (var x in item.fileTypeAmount)
-            {
-                <p>
-                    <strong>@x.MyString</strong>
-                    <span class="pull-right text-muted">@x.MyInt in queue</span>
-                </p>
-                <div class="progress progress-striped active">
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@x.MyInt" aria-valuemin="0" aria-valuemax="@item.highestTypeAmount" style="width: @(x.MyInt / item.highestTypeAmount * 100)%">
-
-                    </div>
-                </div>
-            }
-        </div>
-
-
-    }
-    @*<div class="col-md-6">
-        <h3>Today's File Processed Ranking </h3>
-        @foreach (var x in Model.userStats)
-        {
-            <p>
-                <strong>@x.user.Username</strong>
-                <span class="pull-right text-muted">@x.processedToday processed</span>
-            </p>
-            <div class="progress progress-striped active">
-                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@x.processedToday" aria-valuemin="0" aria-valuemax="@Model.topUser" style="width: @((double)x.processedToday / (double)Model.topUser * 100.0)%">
-
-                </div>
-            </div>
-        }
-    </div>*@
-</div>
 
 

@@ -10,5 +10,6 @@ namespace CFAStudentTracker.Models.ViewModels
         public string User { get; set; }
         public double ProcessedToday { get; set; }
         public double OutstandingErrors { get; set; }
+        public bool IsActive { get; set; }
     }
 }

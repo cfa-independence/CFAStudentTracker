@@ -18,22 +18,23 @@ namespace CFAStudentTracker.Controllers
     public class HomeController : Controller
     {
         CFAEntities db = new CFAEntities();
-        [Authorize(Roles = "Admin,Officer,QC Officer")]
-        public ActionResult Index()
+
+        [Authorize(Roles = "Admin,Officer,QC Officer")]        
+        public ActionResult Index(DateTime? date)
         {
             DataTable dt = new DataTable();
             Session["datatable"] = dt;
             ViewBag.UserQueue = db.GetQueues(User.Identity.Name).Count();
             ViewBag.FilingCabinet = db.UserFilingCabinet(User.Identity.Name).Count();
-            var queues = db.GetQueues(User.Identity.Name).ToList();
-            DashboardViewModel dvm = new DashboardViewModel(User.Identity.Name);
+            var queues = db.GetQueues(User.Identity.Name).ToList();            
+            DashboardViewModel dvm = new DashboardViewModel(User.Identity.Name, date, User.Identity.Name);
             foreach (var item in queues)
             {
                 dvm.queueStats.Add(new QueueStat(db.Queue.Find(item.ID)));
 
             }
             return View(dvm);
-        }
+        }                                   
 
         public ActionResult About()
         {
@@ -77,7 +78,7 @@ namespace CFAStudentTracker.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.mainReturn = Url.Action("Search", "Home", new { SSN = SSN });
+            ViewBag.mainReturn = Url.Action("Search", "Home", new { SSN });
             return View(q);
         }
         [AllowAnonymous]
@@ -92,7 +93,6 @@ namespace CFAStudentTracker.Controllers
         {
             var record = db.Record.Include(r => r.Processing).Include(r => r.Note).Include(r => r.StudentFile).Include(r => r.FileType).Where(r => r.RecordID == id).First();
             return View(record);
-        }
-
+        }        
     }
 }

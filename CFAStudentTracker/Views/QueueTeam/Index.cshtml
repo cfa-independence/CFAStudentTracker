@@ -18,7 +18,7 @@
     </tr>
 
 @foreach (var item in Model.User) {
-    <tr>
+    <tr @(!item.IsActive ? "class=bg-danger title=Inactive": "")>
         <td>
             @Html.DisplayFor(modelItem => item.Username)
         </td>

@@ -168,8 +168,8 @@
             <div class="panel-body">
 
                 @foreach (var x in Model.userStats)
-                {
-                    <div class="panel panel-info">
+                {                    
+                    <div class="panel @(x.user.IsActive ? "panel-info" : "panel-danger")">
                         <div class="panel-heading">
                             <p>
                                 <strong>@Html.ActionLink(x.user.Username, "UserQueue", new { userName = x.user.Username, queueID = Model.queue.QueueID }) </strong>

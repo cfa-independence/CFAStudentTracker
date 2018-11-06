@@ -1,0 +1,200 @@
+﻿@model CFAStudentTracker.Models.DashboardViewModel
+
+@{
+    var utcString = "yyyy-MM-ddTHH:mm:sszzz";
+}
+
+<div class="table-responsive">
+    @if (Model.timeEntries.Count() > 0)
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>                    
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    @if (Model.canApprove || Model.timeEntries.First().TimeEntryStart.Date == DateTime.Now.Date)
+                    {
+                        <th></th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in Model.timeEntries)
+                {
+                    <tr class="@(entry.IsApproved ? "bg-success" : null)">                        
+                        <td id="entry-desc-@entry.TimeEntryId">@entry.TimeEntryDescription</td>
+                        <td id="entry-category-@entry.TimeEntryId">@entry.TimeCategory.TimeCategoryTitle</td>
+                        <td id="entry-start-@entry.TimeEntryId">@entry.TimeEntryStart.ToString("hh:mm tt")</td>
+                        <td id="entry-end-@entry.TimeEntryId">@(entry.TimeEntryEnd.HasValue ? entry.TimeEntryEnd.Value.ToString("hh:mm tt") : "—")</td>
+                        @if (entry.TimeEntryEnd.HasValue && (Model.canApprove || entry.TimeEntryStart.Date == DateTime.Now.Date))
+                        {
+                        <td class="text-right">
+                            <button id="edit-btn-@entry.TimeEntryId" type="button" class="btn btn-default btn-xs" onclick="editEntry(@entry.TimeEntryId, '@entry.TimeEntryStart.ToString(utcString)', '@entry.TimeEntryEnd.Value.ToString(utcString)')">
+                                <span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit
+                            </button>
+                            <button id="save-btn-@entry.TimeEntryId" type="button" class="btn btn-success btn-xs" style="display: none;" onclick="saveEntry(@entry.TimeEntryId, '@entry.TimeEntryStart.ToString(utcString)', '@entry.TimeEntryEnd.Value.ToString(utcString)')">
+                                <span class="glyphicon glyphicon-ok"></span>&nbsp;Save
+                            </button>
+                            <button id="delete-btn-@entry.TimeEntryId" type="button" class="btn btn-danger btn-xs" onclick="deleteEntry('@entry.Username', @entry.TimeEntryId, '@entry.TimeEntryStart')">
+                                <span class="glyphicon glyphicon-trash"></span>&nbsp;Delete
+                            </button>
+                            <button id="cancel-btn-@entry.TimeEntryId" type="button" class="btn btn-default btn-xs" style="display: none;" onclick="cancelEdit()">
+                                <span class="glyphicon glyphicon-remove"></span>&nbsp;Cancel
+                            </button>
+                            @if (Model.canApprove)
+                            {
+                                if (!entry.IsApproved)
+                                {
+                                    <button id="approve-btn-@entry.TimeEntryId" type="button" class="btn btn-success btn-xs" onclick="toggleEntryApproval(@entry.TimeEntryId, true, '@entry.TimeEntryStart')">
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>&nbsp;Approve
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button id="unapprove-btn-@entry.TimeEntryId" type="button" class="btn btn-danger btn-xs" onclick="toggleEntryApproval(@entry.TimeEntryId, false, '@entry.TimeEntryStart')">
+                                        <span class="glyphicon glyphicon-thumbs-down"></span>&nbsp;Unapprove
+                                    </button>
+                                }
+
+                            }
+                        </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h4 class="text-center">No time entries found for the selected date</h4>
+    }
+</div>
+
+<script type="text/javascript">    
+    var description, categoryId, startDateTime, endDateTime;
+    var catEl;
+
+    function editEntry(id, start, end) {
+        var startHour = moment(start).format('HH');        
+        var startMin = moment(start).format('mm');
+        var endHour = moment(end).format('HH');
+        var endMin = moment(end).format('mm');
+
+        document.getElementById('entry-desc-' + id).setAttribute('contenteditable', 'true');
+        catEl = document.getElementById('entry-category-' + id);
+        var categoryText = catEl.innerText.trim();
+
+        axios.get('/TimeCategory/GetTimeCategories')
+            .then(response => {
+                var categories = response.data;
+                var select = '<select id="selectedCategory" class="form-control input-sm" style="margin: -5px;">';
+                for (var index in categories) {
+                    var selected;
+                    var title = categories[index].title
+                    var id = categories[index].categoryId;
+                    if (categoryText === title) {
+                        selected = true;
+                    }
+                    select += ('<option name="' + title + '" value="' + id + '"' + (selected ? 'selected="selected">' : '>')) + title + '</option>';
+                }
+                select += '</select>';
+                catEl.innerHTML = select;
+            });
+
+        var startPicker = flatpickr('#entry-start-' + id, {
+            disable: [
+                function (date) {
+                    return (date.getDay() == 0 || date.getDay() == 6)
+                }
+            ],
+            onClose: function (selectedDates) {
+                document.getElementById('entry-start-' + id).innerText = moment(selectedDates[0]).format('hh:mm A');
+                startDateTime = moment(selectedDates[0]).format();
+                endPicker.config.minTime = moment(selectedDates[0]).format('HH') + ':' + moment(selectedDates[0]).format('mm');                
+            },
+            noCalendar: true,
+            enableTime: true,
+            dateFormat: 'h:i',
+            defaultHour: startHour,
+            defaultMinute: startMin,
+            maxTime: endHour + ':' + endMin
+        });
+
+        var endPicker = flatpickr('#entry-end-' + id, {
+            disable: [
+                function (date) {
+                    return (date.getDay() == 0 || date.getDay() == 6)
+                }
+            ],
+            onClose: function (selectedDates) {
+                document.getElementById('entry-end-' + id).innerText = moment(selectedDates[0]).format('hh:mm A');
+                endDateTime = moment(selectedDates[0]).format();                
+                startPicker.config.maxTime = moment(selectedDates[0]).format('HH') + ':' + moment(selectedDates[0]).format('mm');                                
+            },
+            noCalendar: true,
+            enableTime: true,
+            dateFormat: 'h:i',
+            defaultHour: endHour,
+            defaultMinute: endMin,
+            minTime: startHour + ':' + startMin
+        });
+
+        document.getElementById('save-btn-' + id).style.display = 'inline-block';
+        document.getElementById('edit-btn-' + id).style.display = 'none';
+        document.getElementById('delete-btn-' + id).style.display = 'none';
+        document.getElementById('cancel-btn-' + id).style.display = 'inline-block';
+    }
+
+    function saveEntry(id, start, end) {
+        description = document.getElementById('entry-desc-' + id).innerText.trim();
+        categoryId = parseInt(document.getElementById('selectedCategory').value);
+        if (!startDateTime) {
+            startDateTime = moment(start).format();
+        }
+        if (!endDateTime) {
+            endDateTime = moment(end).format();
+        }
+
+        axios.post('/TimeEntry/UpdateTimeEntry', {
+            id,
+            username: '@Model.username',
+            description,
+            categoryId,
+            startDateTime,
+            endDateTime
+        }).then(response => {
+            refresh(response.data);
+        });
+    }
+
+    function deleteEntry(username, id, date) {
+        axios.post('/TimeEntry/DeleteTimeEntry', {
+            username,
+            id,
+            date
+        }).then(response => {
+            refresh(response.data);
+        });
+    }
+
+    function toggleEntryApproval(id, shouldApprove, startDateTime) {
+        axios.post('/TimeEntry/SetTimeEntryApproval', {
+            id,
+            username: '@Model.username',
+            shouldApprove,
+            startDateTime
+        }).then(response => {
+            refresh(response.data);
+        });
+    }
+
+    function cancelEdit() {
+        getTimeEntries(entryPicker.selectedDates[0]);
+    }
+
+    function refresh(content) {
+        document.getElementById('time-entries').innerHTML = content;
+    }
+</script>

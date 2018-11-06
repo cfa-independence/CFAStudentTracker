@@ -21,9 +21,13 @@ namespace CFAStudentTracker.Models
             this.Note = new HashSet<Note>();
             this.Processing = new HashSet<Processing>();
             this.Queue = new HashSet<Queue>();
+            this.TimeEntry = new HashSet<TimeEntry>();
         }
     
         public string Username { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsSupervisor { get; set; }
+        public string SupervisorName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Hour> Hour { get; set; }
@@ -33,5 +37,7 @@ namespace CFAStudentTracker.Models
         public virtual ICollection<Processing> Processing { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Queue> Queue { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TimeEntry> TimeEntry { get; set; }
     }
 }

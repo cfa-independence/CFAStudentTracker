@@ -21,26 +21,31 @@ namespace CFAStudentTracker.Models.ViewModels
         }
 
         private void setUserVM(short id)
-        {
+        {                                                
             UserManage = new List<GroupManagementUserVM>();
-            var queues = (db.Queue.Include(path => path.User).Include(p=>p.User).Where(p => p.GroupID == id));
+            var queues = db.Queue.Include(p=>p.User).Where(p => p.GroupID == id);
             List<User> Allusers = new List<User>();
             foreach (var item in queues)
             {
                 Allusers.AddRange(item.User);
             }
-            var users = Allusers.Distinct();
+            var users = Allusers.Distinct().OrderBy(u => u.Username);
             var e = new RejectManagementVM(id);
             foreach (var item in users)
             {
-                GroupManagementUserVM x = new GroupManagementUserVM();
-                UserStat i = new UserStat(item);
+                if (item.IsActive)
+                {
+                    UserStat i = new UserStat(item);
+                    GroupManagementUserVM x = new GroupManagementUserVM
+                    {
+                        User = item.Username,
+                        ProcessedToday = i.processedToday,
+                        OutstandingErrors = e.ErrorList.Where(p => p.Processing.Username == item.Username).Count()
+                    };
 
-                x.User = item.Username;
-                x.ProcessedToday = i.processedToday;
-                x.OutstandingErrors = e.ErrorList.Where(p => p.Processing.Username == x.User).Count();
-                UserManage.Add(x);
-            }
+                    UserManage.Add(x);
+                }
+            }            
         }
 
         private void setQueues(short id)

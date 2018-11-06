@@ -26,3 +26,20 @@ textarea {
 .panel-heading[data-toggle] {
     cursor: pointer !important;
 }
+
+#page-wrapper {
+    padding-top: 5px;
+}
+
+.btn[readonly] {
+    pointer-events: none;
+    background-color: #eee;
+}
+
+.flatpickr-input {
+    max-width: 100px;
+}
+
+table.error-list th {
+    min-width: 110px;
+}

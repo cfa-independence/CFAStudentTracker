@@ -14,6 +14,7 @@ using System.Collections.Generic;
 
 namespace CFAStudentTracker.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class SystemManagementController : Controller
     {
         private CFAEntities db = new CFAEntities();

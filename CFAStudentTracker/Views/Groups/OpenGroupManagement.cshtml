@@ -1,6 +1,6 @@
 ﻿@model CFAStudentTracker.Models.ViewModels.GroupManagementVM
 @{
-    ViewBag.Title = "OpenGroupManagement";
+    ViewBag.Title = "Group Management";
 }
 <h2>@ViewBag.GroupName</h2>
 
@@ -67,7 +67,7 @@
                                 </td>
                                 <td>
                                     @if (item.Auditing)
-                {
+                                    {
                                         @Html.DisplayName("Yes")
                                     }
                                     else
@@ -144,17 +144,15 @@
                             <th>
                                 @Html.DisplayName("Pending Errors")
                             </th>
-                            <th>
-                            </th>
-                            <th>
-                            </th>
-                            <th>
-                            </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model.UserManage)
-                        {
+                        {                            
                             <tr>
                                 <td>
                                     @Html.ActionLink(item.User, "../Queues/UserQueue", new { userName = item.User })
@@ -168,6 +166,7 @@
                                 <td><b>@Html.ActionLink("Schedule", "../Hours/AdminIndex", new { user = @item.User })</b></td>
                                 <td><b>@Html.ActionLink("Files Completed", "../CompletedFiles/Index", new { username = @item.User })</b></td>
                                 <td><b>@Html.ActionLink("Errors Completed", "../UserErrorList/CompletedErrors", new { username = item.User })</b></td>
+                                <td><b>@Html.ActionLink("Time Entries", "../TimeEntry/Details", new { username = item.User })</b></td>
                             </tr>
                         }
 

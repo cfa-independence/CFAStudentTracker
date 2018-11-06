@@ -1,4 +1,14 @@
 ﻿@using Microsoft.AspNet.Identity
+
+@{ 
+    CFAStudentTracker.Models.CFAEntities db = new CFAStudentTracker.Models.CFAEntities();    
+
+    if (User.Identity.IsAuthenticated)
+    {
+        ViewBag.IsSupervisor = db.User.Find(User.Identity.Name).IsSupervisor;        
+    }
+}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,23 +16,31 @@
     <link rel="shortcut icon" type="image/ico" href="~/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - CFA Tracker</title>
+    @Styles.Render("https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css")
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/vue")
+    @Scripts.Render("https://cdn.jsdelivr.net/npm/flatpickr")
 </head>
 <body>
     <div id="wrapper">
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
-                @Html.ActionLink("CFA Tracker", "index", "Home", htmlAttributes: new { @class = "navbar-brand" })
+                @Html.ActionLink("CFA Tracker", "Index", "Home", null, htmlAttributes: new { @class = "navbar-brand" })
             </div>
             <!-- /.navbar-header -->
-
             <ul class="nav navbar-top-links navbar-right">
-               @Html.Partial("_LoginPartial")
-                
+                @Html.Partial("_LoginPartial")
+
             </ul>
+
+            @Html.Partial("_TimerWidget")
+
+
+
             <!-- /.navbar-top-links -->
 
             <div class="navbar-default sidebar" role="navigation">
@@ -33,7 +51,7 @@
                             @using (Html.BeginForm("Search", "Home", FormMethod.Get))
                             {
                                 <div class="input-group custom-search-form">
-                                    <input name ="ssn" id="ssn" type="text" class="form-control" maxlength="11" placeholder="XXX-XX-XXXX" autofocus>
+                                    <input name="ssn" id="ssn" type="text" class="form-control" maxlength="11" placeholder="XXX-XX-XXXX" autofocus>
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="submit">
                                             <i class="fa fa-search"></i>
@@ -48,8 +66,9 @@
 
                         </li>
                         <li>
-                            <a href="~/Home/index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                           </li>
+
+                            <a href="~/Home/Index"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        </li>
                         <li>
                             <a href="#"><i class="fa fa-database fa-fw"></i> Daily<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
@@ -74,52 +93,66 @@
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-                        <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Management<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li class="">
-                                    @Html.ActionLink("Team Management", "../Groups/Index")
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li>
+                                <a href="#"><i class="fa fa-sitemap fa-fw"></i> Management<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    @if (ViewBag.IsSupervisor != null && ViewBag.IsSupervisor)
+                                    {
+                                        <li>
+                                            <a href="/TimeEntry/Index">
+                                                Approve Time Entries <span id="unapproved-count" class="pull-right"></span>
+                                            </a>
+                                        </li>
+                                    }
+                                    <li class="">
+                                        @Html.ActionLink("Team Management", "../Groups/Index")
                                     </li>
-                                <li class="">
-                                    <a href="#">Reports<span class="fa arrow"></span></a>
-                                    <ul class="nav nav-third-level collapse" aria-expanded="false" style="height: 0px;">
-                                        <li>
-                                            @Html.ActionLink("Export Queues", "../Export/ExportQueues")
-                                        </li>
-                                        <li>
-                                            @Html.ActionLink("Export Errors", "../Export/ExportErrors")
-                                        </li>
-                                    </ul>
-                                    <!-- /.nav-third-level -->
-                                <li>
-</ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-desktop fa-fw"></i> System<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li class="">
-                                    <a href="#">System Management<span class="fa arrow"></span></a>
-                                    <ul class="nav nav-third-level collapse" aria-expanded="false" style="height: 0px;">
-                                        <li>
-                                            @Html.ActionLink("System Manager", "../SystemManagement/Index")
-                                        </li>
-                                        <li>
-                                            @Html.ActionLink("File Types", "../FileTypes/Index")
-                                        </li>
-                                        <li>
-                                            @Html.ActionLink("Error Types", "../ErrorTypes/Index")
-                                        </li>
-                                        <li>
-                                            @Html.ActionLink("Error Complete Types", "../ErrorCompletes/Index")
-                                        </li>
-                                    </ul>
-                                    <!-- /.nav-third-level -->
-                                <li>
+                                    <li class="">
+                                        <a href="#">Reports<span class="fa arrow"></span></a>
+                                        <ul class="nav nav-third-level collapse" aria-expanded="false" style="height: 0px;">
+                                            <li>
+                                                @Html.ActionLink("Export Queues", "../Export/ExportQueues")
+                                            </li>
+                                            <li>
+                                                @Html.ActionLink("Export Errors", "../Export/ExportErrors")
+                                            </li>
+                                        </ul>
+                                        <!-- /.nav-third-level -->
+                                    <li>
+                                </ul>
+                                <!-- /.nav-second-level -->
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa fa-desktop fa-fw"></i> System<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li class="">
+                                        <a href="#">System Management<span class="fa arrow"></span></a>
+                                        <ul class="nav nav-third-level collapse" aria-expanded="false" style="height: 0px;">
+                                            <li>
+                                                @Html.ActionLink("System Manager", "../SystemManagement/Index")
+                                            </li>
+                                            <li>
+                                                @Html.ActionLink("File Types", "../FileTypes/Index")
+                                            </li>
+                                            <li>
+                                                @Html.ActionLink("Error Types", "../ErrorTypes/Index")
+                                            </li>
+                                            <li>
+                                                @Html.ActionLink("Error Complete Types", "../ErrorCompletes/Index")
+                                            </li>
+                                            <li>
+                                                @Html.ActionLink("Time Entry Categories", "../TimeCategory/Index")
+                                            </li>
+                                        </ul>
+                                        <!-- /.nav-third-level -->
+                                    <li>
 
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
+                                </ul>
+                                <!-- /.nav-second-level -->
+                            </li>
+                        }
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -131,9 +164,9 @@
         </div>
 
     </div>
-                       
-                       @Scripts.Render("~/bundles/bootstrap")
-                       @RenderSection("scripts", required: false)
+
+    @Scripts.Render("~/bundles/bootstrap")    
+    @RenderSection("scripts", required: false)
     <script type="text/javascript">
         $('#ssn').keyup(function () {
             var val = this.value.replace(/\D/g, '');
@@ -151,6 +184,18 @@
             newVal += val;
             this.value = newVal;
         });
+
+        if ('@ViewBag.IsSupervisor' === 'True') {
+            axios.get('/TimeEntry/GetUnapprovedCount').then(response => {
+                if (response.data.count > 0) {
+                    var unapproved = document.getElementById('unapproved-count');
+                    unapproved.classList.add('badge');
+                    unapproved.innerText = response.data.count;
+                }
+            })
+        }
+
+
     </script>
 </body>
 </html>

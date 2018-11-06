@@ -25,7 +25,7 @@ namespace CFAStudentTracker.Controllers
         }
 
         // GET: Groups/Details/5
-        public async Task<ActionResult> OpenGroupManagement(short? id)
+        public ActionResult OpenGroupManagement(short? id)
         {
             GroupManagementVM GMVM = new GroupManagementVM((short)id);
             ViewBag.GroupName = db.Group.Find(id).GroupName;

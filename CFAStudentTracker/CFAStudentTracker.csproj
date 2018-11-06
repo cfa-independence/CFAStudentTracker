@@ -206,6 +206,8 @@
     <Compile Include="Controllers\QueueTeamController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\SystemManagementController.cs" />
+    <Compile Include="Controllers\TimeCategoryController.cs" />
+    <Compile Include="Controllers\TimeEntryController.cs" />
     <Compile Include="Controllers\UserErrorListController.cs" />
     <Compile Include="Controllers\UserFilingCabinetController.cs" />
     <Compile Include="Controllers\UserQueueController.cs" />
@@ -322,6 +324,12 @@
     <Compile Include="Models\StudentFile.cs">
       <DependentUpon>CFA.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TimeCategory.cs">
+      <DependentUpon>CFA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TimeEntry.cs">
+      <DependentUpon>CFA.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\User.cs">
       <DependentUpon>CFA.tt</DependentUpon>
     </Compile>
@@ -417,6 +425,8 @@
       <DependentUpon>CFA.edmx</DependentUpon>
       <LastGenOutput>CFA.cs</LastGenOutput>
     </Content>
+    <Content Include="Scripts\axios.js" />
+    <Content Include="Scripts\axios.min.js" />
     <Content Include="Scripts\Chart.bundle.js" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\metisMenu.css" />
@@ -540,7 +550,12 @@
     <Content Include="Models\CFA.edmx.diagram">
       <DependentUpon>CFA.edmx</DependentUpon>
     </Content>
+    <None Include=".bin\git.cmd" />
+    <None Include=".bin\node.cmd" />
+    <None Include=".bin\npm.cmd" />
     <None Include="Properties\PublishProfiles\CFA Tracker.pubxml" />
+    <Content Include="Scripts\axios.min.map" />
+    <Content Include="Scripts\axios.map" />
     <None Include="Scripts\jquery-2.2.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.2.3.js" />
     <Content Include="Scripts\jquery-2.2.3.min.js" />
@@ -566,6 +581,8 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\sb-admin-2.js" />
     <Content Include="Scripts\SessionVariables.js" />
+    <Content Include="Scripts\vue.js" />
+    <Content Include="Scripts\vue.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -684,12 +701,23 @@
     <Content Include="Views\SystemManagement\DupSSNResolve.cshtml" />
     <Content Include="Views\MetricProgressReport\ErrorList.cshtml" />
     <Content Include="Views\FileOpen\_CalculatorPartial.cshtml" />
+    <Content Include="Views\Shared\_TimerWidget.cshtml" />
+    <Content Include="Views\TimeCategory\Create.cshtml" />
+    <Content Include="Views\TimeCategory\Index.cshtml" />
+    <Content Include="Views\TimeCategory\Delete.cshtml" />
+    <Content Include="Views\TimeCategory\Edit.cshtml" />
+    <Content Include="Views\TimeEntry\_TimeEntries.cshtml" />
+    <Content Include="Views\TimeEntry\_TimeEntryTable.cshtml" />
+    <Content Include="Views\TimeEntry\Details.cshtml" />
+    <Content Include="Views\TimeEntry\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>

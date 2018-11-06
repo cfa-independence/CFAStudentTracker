@@ -457,7 +457,7 @@ namespace CFAStudentTracker.Controllers
         }
         public ActionResult Reassign(string ProcessingID)
         {
-            ViewBag.Username = new SelectList(db.User, "Username", "Username");
+            ViewBag.Username = new SelectList(db.User.Where(u => u.IsActive), "Username", "Username");
             long i = long.Parse(ProcessingID);
             return View(db.Processing.Find(i));
         }
@@ -480,7 +480,7 @@ namespace CFAStudentTracker.Controllers
                 return RedirectToAction("Index", new { i=processing.QueueID});
             }
 
-            ViewBag.Username = new SelectList(db.User, "Username", "Username");
+            ViewBag.Username = new SelectList(db.User.Where(u => u.IsActive), "Username", "Username");
             return View(db.Processing.Find(processing.ProcID));
         }
 

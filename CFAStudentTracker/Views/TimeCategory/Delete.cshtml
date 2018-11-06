@@ -1,0 +1,29 @@
+﻿@model CFAStudentTracker.Models.TimeCategory
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row form-group">
+        <fieldset class="col-lg-6">
+            <legend>Delete Time Category</legend>
+            <dl class="form-group dl-horizontal">
+                <dt>
+                    @Html.DisplayName("Title")
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.TimeCategoryTitle)
+                </dd>
+
+            </dl>
+
+
+        </fieldset>
+    </div>
+
+    <div class="col-xs-12">
+        <a type="button" class="btn btn-link" href="/TimeCategory">Cancel</a> |
+        <input type="submit" value="Delete" class="btn btn-default" />
+    </div>
+}

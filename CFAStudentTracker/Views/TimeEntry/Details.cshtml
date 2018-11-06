@@ -1,0 +1,9 @@
+﻿@model CFAStudentTracker.Models.DashboardViewModel
+
+
+<div class="row">
+    <div class="col-lg-8">
+        <h4>Time Entries for @Model.username</h4>
+        @Html.Partial("../TimeEntry/_TimeEntries", Model)
+    </div>
+</div>

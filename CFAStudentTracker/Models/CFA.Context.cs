@@ -43,6 +43,8 @@ namespace CFAStudentTracker.Models
         public virtual DbSet<ErrorComplete> ErrorComplete { get; set; }
         public virtual DbSet<ErrorType> ErrorType { get; set; }
         public virtual DbSet<WeightedFile> WeightedFile { get; set; }
+        public virtual DbSet<TimeCategory> TimeCategory { get; set; }
+        public virtual DbSet<TimeEntry> TimeEntry { get; set; }
     
         [DbFunction("CFAEntities", "AverageFilesPerHour")]
         public virtual IQueryable<AverageFilesPerHour_Result> AverageFilesPerHour(Nullable<System.DateTime> inDateOld, Nullable<System.DateTime> inDateNew)
@@ -187,13 +189,21 @@ namespace CFAStudentTracker.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_GetNextFile", insUsernameParameter, queueIDParameter);
         }
     
-        public virtual int sp_InsertUser(string insUsername)
+        public virtual int sp_InsertUser(string insUsername, Nullable<bool> insIsActive, Nullable<bool> insIsSupervisor)
         {
             var insUsernameParameter = insUsername != null ?
                 new ObjectParameter("InsUsername", insUsername) :
                 new ObjectParameter("InsUsername", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_InsertUser", insUsernameParameter);
+            var insIsActiveParameter = insIsActive.HasValue ?
+                new ObjectParameter("insIsActive", insIsActive) :
+                new ObjectParameter("insIsActive", typeof(bool));
+    
+            var insIsSupervisorParameter = insIsSupervisor.HasValue ?
+                new ObjectParameter("insIsSupervisor", insIsSupervisor) :
+                new ObjectParameter("insIsSupervisor", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_InsertUser", insUsernameParameter, insIsActiveParameter, insIsSupervisorParameter);
         }
     
         public virtual int sp_CompleteProcessing(Nullable<long> insProcID, Nullable<short> curQueueID)

@@ -17,7 +17,7 @@ namespace CFAStudentTracker.Controllers
     public class UserQueueController : Controller
     {               
         private CFAEntities db = new CFAEntities();
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             var user = User.Identity.Name;
             
@@ -33,7 +33,7 @@ namespace CFAStudentTracker.Controllers
                     if (pr.ToList().Count < max)
                     {
                         Helpers helper = new Helpers();
-                        helper.GetNextFile(queID, User.Identity.Name);
+                        await helper.GetNextFile(queID, User.Identity.Name);
                     }
                 }
                 

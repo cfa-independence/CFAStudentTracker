@@ -19,6 +19,7 @@ namespace CFAStudentTracker.Controllers
     public class MembershipController : Controller
     {
         private MembershipEntities db = new MembershipEntities();
+        private CFAEntities cfaDb = new CFAEntities();
         private Helpers help = new Helpers();
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
@@ -37,7 +38,7 @@ namespace CFAStudentTracker.Controllers
         public ActionResult Index()
         {
 
-            var users = db.AspNetUsers.Include(p => p.AspNetRoles);
+            var users = db.AspNetUsers.Include(p => p.AspNetRoles).OrderBy(p => p.UserName);
             return View(users);
         }
 
@@ -56,13 +57,13 @@ namespace CFAStudentTracker.Controllers
             return View(aspNetUser);
         }
 
-        public async Task<ActionResult> ResetPassword(String userId)
+        public async Task<ActionResult> ResetPassword(string userId)
         {
             ApplicationDbContext context = new ApplicationDbContext();
             UserStore<ApplicationUser> store = new UserStore<ApplicationUser>(context);
             UserManager<ApplicationUser> UserManager = new UserManager<ApplicationUser>(store);
-            String newPassword = "P@ssword1"; //"<PasswordAsTypedByUser>";
-            String hashedNewPassword = UserManager.PasswordHasher.HashPassword(newPassword);
+            string newPassword = "P@ssword1"; //"<PasswordAsTypedByUser>";
+            string hashedNewPassword = UserManager.PasswordHasher.HashPassword(newPassword);
             ApplicationUser cUser = await store.FindByIdAsync(userId);
             await store.SetPasswordHashAsync(cUser, hashedNewPassword);
             await store.UpdateAsync(cUser);
@@ -104,11 +105,9 @@ namespace CFAStudentTracker.Controllers
             {
                 return HttpNotFound();
             }
-
-            var i = help.GetRoles();
-                
+            ViewBag.Supervisors = db.AspNetUsers.Where(u => u.IsSupervisor && u.UserName != aspNetUser.UserName).ToSelectList(u => u.Id, u => u.UserName );
+            ViewBag.Roles = help.GetRoles();
             
-            ViewBag.Roles = i;
             return View(aspNetUser);
         }
 
@@ -117,7 +116,7 @@ namespace CFAStudentTracker.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,LockoutEndDateUtc,LockoutEnabled,AccessFailedCount,UserName")] AspNetUser aspNetUser, string Roles)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Email,EmailConfirmed,PasswordHash,SecurityStamp,LockoutEndDateUtc,LockoutEnabled,AccessFailedCount,UserName,IsActive,IsSupervisor,SupervisorId")] AspNetUser aspNetUser, string Roles)
         {
             var e = db.AspNetUsers.Include(p => p.AspNetRoles).Where(p => p.Id == aspNetUser.Id).Select(p=>p.AspNetRoles).First();
             string[] x = new string[e.Count()];
@@ -132,8 +131,17 @@ namespace CFAStudentTracker.Controllers
                 UserManager.RemoveFromRoles(aspNetUser.Id,x);
                 UserManager.AddToRole(aspNetUser.Id, Roles);
                 aspNetUser.UserName = aspNetUser.UserName.ToUpper();
+                aspNetUser.Supervisor = db.AspNetUsers.Find(aspNetUser.SupervisorId);
                 db.Entry(aspNetUser).State = EntityState.Modified;
                 await db.SaveChangesAsync();
+                
+
+                User user = await cfaDb.User.FindAsync(aspNetUser.UserName);
+                user.IsSupervisor = aspNetUser.IsSupervisor;
+                user.SupervisorName = aspNetUser.Supervisor?.UserName;
+                cfaDb.Entry(user).State = EntityState.Modified;
+                await cfaDb.SaveChangesAsync();
+
                 return RedirectToAction("Index");
             }
             return View(aspNetUser);
@@ -160,7 +168,35 @@ namespace CFAStudentTracker.Controllers
         public async Task<ActionResult> DeleteConfirmed(string id)
         {
             AspNetUser aspNetUser = await db.AspNetUsers.FindAsync(id);
+            User user = await cfaDb.User.FindAsync(id);
+            cfaDb.User.Remove(user);
             db.AspNetUsers.Remove(aspNetUser);
+
+            await cfaDb.SaveChangesAsync();
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> ActivateUser(string Id)
+        {
+            AspNetUser user = await db.AspNetUsers.FindAsync(Id);
+            User cfaUser = await cfaDb.User.FindAsync(user.UserName);
+
+            cfaUser.IsActive = true;
+            user.IsActive = true;
+            await cfaDb.SaveChangesAsync();
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> DeactivateUser(string Id)
+        {
+            AspNetUser user = await db.AspNetUsers.FindAsync(Id);
+            User cfaUser = await cfaDb.User.FindAsync(user.UserName);
+
+            cfaUser.IsActive = false;
+            user.IsActive = false;
+            await cfaDb.SaveChangesAsync();
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

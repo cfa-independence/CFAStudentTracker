@@ -20,7 +20,7 @@ namespace CFAStudentTracker.Models
         private RoleStore<IdentityRole> roleStore;
         private RoleManager<IdentityRole> roleManager;
         private UserStore<ApplicationUser> userStore;
-        private UserManager<ApplicationUser> userManager;
+        private UserManager<ApplicationUser> userManager;        
         private CFAEntities db = new CFAEntities();
         
         public Helpers()

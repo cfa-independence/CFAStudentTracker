@@ -1,0 +1,129 @@
+﻿<form class="navbar-form navbar-right" onsubmit="return false;">
+    <div class="form-group" id="timer-widget">
+        <div class="input-group">
+            <span class="input-group-addon" id="timer">
+                <span class="glyphicon glyphicon-time"></span>&nbsp;<span>{{ hours }}:{{ minutes }}:{{ seconds }}</span>
+            </span>
+            <input type="text" class="form-control" v-model="timeEntry.description" :placeholder="!selectedCategory ? 'Select a category' : 'Description'" :readonly="isRunning || !selectedCategory" />
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default" data-toggle="dropdown" :readonly="isRunning">
+                    {{ selectedCategory.title }}&nbsp;<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">                    
+                    <li v-for="category in categoryList">
+                        <a v-on:click="selectCategory(category)">{{ category.title }}</a>
+                    </li>
+                </ul>
+
+                <button type="submit" class="btn btn-default" v-if="!isRunning" v-on:click="startTimer" :readonly="!selectedCategory">
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
+                <button type="button" class="btn btn-default" v-if="isRunning" v-on:click="stopTimer">
+                    <span class="glyphicon glyphicon-stop"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    const vm = new Vue({
+        el: '#timer-widget',
+        data: {
+            hours: '00',
+            minutes: '00',
+            seconds: '00',
+            timeEntry: {},            
+            selectedCategory: '',
+            categoryList: [],
+            isRunning: false,            
+        },
+        methods: {
+            refreshEntries: function () {
+                if (window.location.pathname == "/" || window.location.pathname == "/Home/Index") {
+                    axios.get('/TimeEntry/GetTimeEntriesForDate', {
+                        params: {
+                            date: moment().format()
+                        }
+                    }).then(response => {
+                        document.getElementById('time-entries').innerHTML = response.data;
+                    })
+                }
+            },
+            selectCategory: function (category) {
+                this.selectedCategory = category;
+            },
+            startTimer: function () {
+                this.timeEntry.startTime = moment();
+                this.timeEntry.description = this.timeEntry.description || this.selectedCategory.title
+                axios.post('/TimeEntry/StartTimer', {                    
+                    start: this.timeEntry.startTime,
+                    description: this.timeEntry.description,
+                    categoryId: this.selectedCategory.categoryId
+                }).then(response => {
+                    console.log(response);
+                    this.timeEntry.entryId = response.data.entryId;
+                    this.hours = '00';
+                    this.minutes = '00';
+                    this.seconds = '00';                    
+                    this.resumeTimer();
+                    this.refreshEntries();
+                })
+            },
+            updateTimer: function () {
+                if (this.isRunning) {
+                    var now = moment();
+                    var duration = moment.duration(now.diff(this.timeEntry.startTime));
+
+                    this.hours = (duration.get('hours')) < 10 ? "0" + duration.get('hours') : duration.get('hours');
+                    this.minutes = (duration.get('minutes')) < 10 ? "0" + duration.get('minutes') : duration.get('minutes');
+                    this.seconds = (duration.get('seconds')) < 10 ? "0" + duration.get('seconds') : duration.get('seconds');
+                }
+            },
+            resumeTimer: function () {
+                this.isRunning = true;
+                setInterval(this.updateTimer, 1000);
+            },
+            stopTimer: function () {
+                axios.post('/TimeEntry/StopTimer', {
+                    entryId: this.timeEntry.entryId,
+                    end: moment()
+                }).then(() => {
+                    this.isRunning = false;
+                    clearInterval(this.updateTimer);
+                    this.refreshEntries();
+                });
+            },
+            getActiveTimer: function () {
+                axios.get('/TimeEntry/GetTimerInProgress')
+                    .then(response => {                               
+                        if (response.data) {
+                            this.timeEntry = response.data;
+                            this.timeEntry.startTime = moment(response.data.startTime);                            
+                            this.resumeTimer();
+
+                            if (response.data.categoryId) {
+                                axios.get('/TimeCategory/GetTimeCategory/' + response.data.categoryId)
+                                    .then(response => {
+                                        this.selectedCategory = response.data;
+                                    });
+                            }
+                        }
+                    })
+                    .catch(reason => {
+                        console.warn(reason);
+                    });
+            }
+        },
+        mounted() {
+            this.getActiveTimer();
+
+            axios.get('/TimeCategory/GetTimeCategories')
+                .then(response => {
+                    this.categoryList = response.data;
+                });
+
+
+        }
+    });
+</script>

@@ -1,0 +1,68 @@
+﻿@model List<CFAStudentTracker.Models.TimeEntry>
+
+@{
+    ViewBag.Title = "Time Entry Approval";
+    var utcString = "yyyy-MM-ddTHH:mm:sszzz";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="row">
+            <div class="col-xs-12">
+                <h3>@ViewBag.Title</h3>                   
+            </div>                    
+        </div>
+        @if (Model.Count() > 0)
+        {
+            <div class="panel panel-primary">                
+                <table class="table table-condensed table-hover table-responsive">
+                    <thead>
+                        <tr class="bg-info">
+                            <th>Username</th>
+                            <th>Entry Date</th>
+                            <th>Duration</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <b>@Html.ActionLink(@entry.Username, "../TimeEntry/Details", new { username = entry.Username, date = entry.TimeEntryStart.ToString(utcString) })</b>                                    
+                                </td>
+                                <td>@entry.TimeEntryStart.Date.ToString("MM/dd/yy")</td>
+                                <td>@((entry.TimeEntryEnd - entry.TimeEntryStart).Value.Hours)h @((entry.TimeEntryEnd - entry.TimeEntryStart).Value.Minutes)m</td>
+                                <td>@entry.TimeCategory.TimeCategoryTitle</td>
+                                <td>@entry.TimeEntryDescription</td>
+                                <td class="text-right">
+                                    <button type="button" class="btn btn-success btn-xs" onclick="approveEntry(@entry.TimeEntryId)">
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>&nbsp;Approve
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <h3>
+                <small>You have no time entries to approve.</small>
+            </h3>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+    function approveEntry(id) {        
+        axios.post('/TimeEntry/ApproveTimeEntry', {
+            id
+        }).then(() => {
+            location.reload();
+        });
+    }
+</script>

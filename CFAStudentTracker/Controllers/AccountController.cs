@@ -124,12 +124,12 @@ namespace CFAStudentTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName.ToUpper(), Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);                
+                var user = new ApplicationUser { UserName = model.UserName.ToUpper(), Email = model.Email, IsActive = true, IsSupervisor = false };                
+                var result = await UserManager.CreateAsync(user, model.Password);                    
                 if (result.Succeeded)
                 {                                   
                     await UserManager.AddToRoleAsync(user.Id, model.role);
-                    db.sp_InsertUser(model.UserName.ToUpper());
+                    db.sp_InsertUser(user.UserName, user.IsActive, user.IsSupervisor);
                   //UserManager.AddToRoles(, model.role);
                     return RedirectToAction("../Membership/Index");
                 }

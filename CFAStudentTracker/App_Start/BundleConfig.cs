@@ -8,7 +8,7 @@ namespace CFAStudentTracker
     {
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
-        {
+        {            
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -19,6 +19,13 @@ namespace CFAStudentTracker
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
+            
+            bundles.Add(new ScriptBundle("~/bundles/vue").Include(
+                        "~/Scripts/axios.js",
+                        "~/Scripts/vue.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/moment").Include(
+                        "~/Scripts/moment.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
@@ -32,9 +39,9 @@ namespace CFAStudentTracker
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/metisMenu.css",
-                      "~/Content/font-awesome.css",
-                      "~/Content/Site.css",
-                      "~/Content/sb-admin-2.css"));
+                      "~/Content/font-awesome.css",                      
+                      "~/Content/sb-admin-2.css",
+                      "~/Content/Site.css"));
         }
     }
 }
